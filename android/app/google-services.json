@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "133227637259",
+    "project_id": "swami-samartha-ent-dist",
+    "storage_bucket": "swami-samartha-ent-dist.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:133227637259:android:4bee366bc67e07f6e3b50e",
+        "android_client_info": {
+          "package_name": "com.example.sss_retail"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAiq-A4K4Hv5iTGgPG6HRJQKI1iGvJBLtM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
