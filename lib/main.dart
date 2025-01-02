@@ -5,6 +5,10 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/constants/routes.dart';
+import 'package:sss_retail/providers/auth_provider.dart';
+import 'package:sss_retail/providers/item_provider.dart';
+import 'package:sss_retail/providers/order_provider.dart';
+import 'package:sss_retail/providers/user_provider.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
 
@@ -26,13 +30,25 @@ class MyApp extends StatelessWidget {
 
     return ScreenUtilInit(
       designSize: const Size(360, 900),
-      splitScreenMode: true,
       builder: (context, _) {
         return MediaQuery(
           data: MediaQuery.of(context)
               .copyWith(textScaler: const TextScaler.linear(1)),
           child: MultiProvider(
-            providers: [],
+            providers: [
+              ChangeNotifierProvider(
+                create: (BuildContext context) => Auth(),
+              ),
+              ChangeNotifierProvider(
+                create: (BuildContext context) => UserProvider(),
+              ),
+              ChangeNotifierProvider(
+                create: (BuildContext context) => OrderProvider(),
+              ),
+              ChangeNotifierProvider(
+                create: (BuildContext context) => ItemProvider(),
+              ),
+            ],
             child: MaterialApp(
               debugShowCheckedModeBanner: false,
               initialRoute: '/',

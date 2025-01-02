@@ -55,6 +55,7 @@ class Auth extends ChangeNotifier {
           this.verificationId = verificationId;
         },
       );
+      _phoneNo = _auth.currentUser!.phoneNumber!;
       notifyListeners();
     } catch (e) {
       rethrow;
@@ -173,7 +174,11 @@ class Auth extends ChangeNotifier {
 
   Future<void> autoLogin() async {
     final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('UID')) {
+    if (!prefs.containsKey('UID') ||
+        !prefs.containsKey('UserName') ||
+        !prefs.containsKey('PhoneNo') ||
+        !prefs.containsKey('DealerShipName') ||
+        !prefs.containsKey('IsAdmin')) {
       return;
     }
     _token = prefs.getString('UID')!;
