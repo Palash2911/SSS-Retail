@@ -123,17 +123,23 @@ class _LoginState extends State<Login> {
                                     FilteringTextInputFormatter.digitsOnly,
                                   ],
                                   style: TextStyle(
-                                    fontSize: 18.sp,
+                                    fontSize: 19.sp,
                                     fontWeight: FontWeight.w600,
                                   ),
                                   cursorColor: AppColors.accent,
                                   maxLength: 10,
                                   decoration: InputDecoration(
-                                    prefixText: '+91  ',
-                                    prefixStyle: TextStyle(
-                                      fontSize: 18.sp,
-                                      color: Colors.grey,
-                                      fontWeight: FontWeight.w600,
+                                    prefixIcon: Container(
+                                      width: 30,
+                                      alignment: Alignment.centerLeft,
+                                      child: Text(
+                                        '+91 ',
+                                        style: TextStyle(
+                                          fontSize: 18.sp,
+                                          color: Colors.grey,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                                     ),
                                     hintText: 'Enter Number',
                                     hintStyle: TextStyle(color: Colors.black54),

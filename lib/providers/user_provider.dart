@@ -50,6 +50,27 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  void getUser(String uid) async {
+    try {
+      if (uid.isEmpty) return;
+      DocumentSnapshot userSnapShot =
+          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+
+      currUser = UserModel(
+        uid: uid,
+        name: userSnapShot['Name'],
+        phone: userSnapShot['Contact'],
+        dealerShipName: userSnapShot['DealerShipName'],
+        lastOrderId: userSnapShot['LastOrderID'],
+        isAdmin: userSnapShot['IsAdmin'],
+      );
+      notifyListeners();
+    } catch (e) {
+      notifyListeners();
+      throw Exception("Failed to fetch data $e");
+    }
+  }
+
   Future updateUser(UserModel user) async {
     final prefs = await SharedPreferences.getInstance();
     try {
@@ -69,6 +90,10 @@ class UserProvider extends ChangeNotifier {
       prefs.setString("DealerShipName", user.dealerShipName);
       prefs.setString('PhoneNo', user.phone);
       prefs.setBool("IsAdmin", user.isAdmin);
+      currUser.dealerShipName = user.dealerShipName;
+      currUser.name = user.name;
+      currUser.phone = user.phone;
+
       notifyListeners();
     } catch (e) {
       notifyListeners();

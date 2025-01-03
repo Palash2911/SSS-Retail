@@ -5,18 +5,19 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/user_model.dart';
+import 'package:sss_retail/providers/auth_provider.dart';
 import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
 
-class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({super.key});
+class EditProfile extends StatefulWidget {
+  const EditProfile({super.key});
 
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  State<EditProfile> createState() => _EditProfileState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _EditProfileState extends State<EditProfile> {
   final List<TextEditingController> _profileDetails = [
     TextEditingController(),
     TextEditingController(),
@@ -34,15 +35,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   void initState() {
     super.initState();
-    getPhoneNo();
+    getDetails();
   }
 
-  void getPhoneNo() {
-    final auth = FirebaseAuth.instance;
-    if (auth.currentUser?.uid != null) {
-      setState(() {
-        _profileDetails[1].text = auth.currentUser?.phoneNumber ?? '';
-        phoneNo = _profileDetails[1].text;
+  void getDetails() {
+    final profileProv = Provider.of<Auth>(context, listen: false);
+    final registerProv = Provider.of<UserProvider>(context, listen: false);
+    registerProv.getUser(profileProv.token);
+    if (profileProv.token.isNotEmpty) {
+      _profileDetails[0].text = registerProv.currUser.name;
+      name = registerProv.currUser.name;
+      _profileDetails[2].text = registerProv.currUser.dealerShipName;
+      dealrshipName = registerProv.currUser.dealerShipName;
+      _profileDetails[1].text = registerProv.currUser.phone;
+      phoneNo = registerProv.currUser.phone;
+      Future.delayed(Duration(seconds: 1), () {
+        setState(() {
+          isLoading = false;
+        });
       });
     }
   }
@@ -109,7 +119,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   //       ImageSource.gallery;
   // }
 
-  void register() async {
+  void updateUser() async {
     // if (_selectedImage == null) {
     //   ScaffoldMessenger.of(context).showSnackBar(
     //     const SnackBar(
@@ -124,8 +134,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     try {
       final registerProv = Provider.of<UserProvider>(context, listen: false);
       final auth = FirebaseAuth.instance;
-      print(auth.currentUser!.uid);
-      await registerProv.registerUser(
+      await registerProv.updateUser(
         UserModel(
           uid: auth.currentUser!.uid,
           name: name,
@@ -137,10 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (mounted) {
-        Navigator.of(context).pushNamedAndRemoveUntil(
-          "/user-bottom-nav",
-          (Route<dynamic> route) => false,
-        );
+        Navigator.pop(context);
       }
     } catch (e) {
       print(e);
@@ -153,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Create An Account"),
+      appBar: CustomAppBar(title: "Update Profile"),
       body: isLoading
           ? CustomLoader()
           : Column(
@@ -359,7 +365,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             phoneNo.length == 13 &&
                             dealrshipName.isNotEmpty
                         ? () {
-                            register();
+                            updateUser();
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
@@ -377,7 +383,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           const Color.fromARGB(255, 200, 200, 200),
                     ),
                     child: const Text(
-                      'Register',
+                      'Update Details',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,

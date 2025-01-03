@@ -62,9 +62,9 @@ class Auth extends ChangeNotifier {
     }
   }
 
-  Future<void> sendOtp(String phoneNumber) async {
+  Future<void> sendOtp() async {
     await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
+      phoneNumber: _auth.currentUser!.phoneNumber ?? "",
       verificationCompleted: (PhoneAuthCredential credential) async {
         // await _auth.currentUser!.linkWithCredential(credential);
       },
@@ -113,9 +113,6 @@ class Auth extends ChangeNotifier {
       CollectionReference users =
           FirebaseFirestore.instance.collection('Users');
 
-      CollectionReference admins =
-          FirebaseFirestore.instance.collection('Admins');
-
       final currentUserId = _auth.currentUser?.uid;
 
       if (currentUserId == null) {
@@ -125,17 +122,17 @@ class Auth extends ChangeNotifier {
       final userSnapshot = await users.doc(currentUserId).get();
       if (userSnapshot.exists) {
         prefs.setString("Users", userSnapshot['Name']);
-        prefs.setString("PhoneNo", userSnapshot['Phone']);
+        prefs.setString("PhoneNo", userSnapshot['Contact']);
         prefs.setString("DealerShipName", userSnapshot['DealerShipName']);
         prefs.setBool("IsAdmin", false);
         prefs.setString('UID', _auth.currentUser!.uid);
         _userName = userSnapshot['Name'];
-        _phoneNo = userSnapshot['Phone'];
+        _phoneNo = userSnapshot['Contact'];
         return 0;
       }
 
       if (_auth.currentUser != null) {
-        final adminQuery = await admins
+        final adminQuery = await users
             .where('Phone', isEqualTo: _auth.currentUser?.phoneNumber)
             .limit(1)
             .get();
@@ -143,12 +140,12 @@ class Auth extends ChangeNotifier {
         if (adminQuery.docs.isNotEmpty) {
           final adminSnapshot = adminQuery.docs.first;
           prefs.setString("UserName", adminSnapshot['Name']);
-          prefs.setString("PhoneNo", adminSnapshot['Phone']);
+          prefs.setString("PhoneNo", adminSnapshot['Contact']);
           prefs.setString('UID', _auth.currentUser!.uid);
           prefs.setString("DealerShipName", 'SWAMI SAMARTHA ENT');
           prefs.setBool("IsAdmin", true);
           _userName = adminSnapshot['Name'];
-          _phoneNo = adminSnapshot['Phone'];
+          _phoneNo = adminSnapshot['Contact'];
           _token = _auth.currentUser!.uid;
           return 1;
         }

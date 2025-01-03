@@ -1,8 +1,8 @@
 class UserModel {
   final String uid;
-  final String name;
-  final String phone;
-  final String dealerShipName;
+  String name;
+  String phone;
+  String dealerShipName;
   final String lastOrderId;
   final bool isAdmin;
 

@@ -24,7 +24,7 @@ class _OTPScreenState extends State<OTPScreen> {
   var isLoading = false;
   final _form = GlobalKey<FormState>();
   Timer? _timer;
-  int _remainingTime = 30;
+  int _remainingTime = 0;
   bool _isButtonDisabled = false;
 
   @override
@@ -43,7 +43,7 @@ class _OTPScreenState extends State<OTPScreen> {
   void _startTimer() {
     setState(() {
       _isButtonDisabled = true;
-      _remainingTime = 30;
+      _remainingTime = 0;
     });
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {
@@ -57,6 +57,28 @@ class _OTPScreenState extends State<OTPScreen> {
       });
     });
   }
+
+  // Future resendOtp() async {
+  //   try {
+  //     var authProvider = Provider.of<Auth>(context, listen: false);
+  //     final auth = FirebaseAuth.instance;
+  //     print(auth.currentUser!.phoneNumber);
+  //     await authProvider
+  //         .authenticate(auth.currentUser!.phoneNumber.toString())
+  //         .then((_) {
+  //       Fluttertoast.showToast(
+  //         msg: "OTP Resent Successfully !",
+  //         toastLength: Toast.LENGTH_SHORT,
+  //         timeInSecForIosWeb: 1,
+  //         backgroundColor: AppColors.primary,
+  //         textColor: Colors.white,
+  //         fontSize: 16.0,
+  //       );
+  //     });
+  //   } catch (e) {
+  //     print("yeh error $e");
+  //   }
+  // }
 
   Future _verifyOtp() async {
     setState(() {
@@ -184,7 +206,8 @@ class _OTPScreenState extends State<OTPScreen> {
                                   child: OutlinedButton(
                                     onPressed: _isButtonDisabled
                                         ? null
-                                        : () {
+                                        : () async {
+                                            // await resendOtp();
                                             _startTimer();
                                           },
                                     style: OutlinedButton.styleFrom(

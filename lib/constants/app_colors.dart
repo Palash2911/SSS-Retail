@@ -12,12 +12,13 @@ class AppThemes {
     hintColor: AppColors.accent,
     scaffoldBackgroundColor: Colors.white,
     appBarTheme: const AppBarTheme(
-      backgroundColor: Colors.white,
       iconTheme: IconThemeData(color: Colors.black),
-      elevation: 1,
+      toolbarHeight: 72,
+      elevation: 2,
+      backgroundColor: AppColors.primary,
       titleTextStyle: TextStyle(
-        color: Colors.black,
-        fontSize: 19,
+        color: Colors.white,
+        fontSize: 24,
         fontWeight: FontWeight.w600,
       ),
     ),
