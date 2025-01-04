@@ -24,7 +24,7 @@ class _OTPScreenState extends State<OTPScreen> {
   var isLoading = false;
   final _form = GlobalKey<FormState>();
   Timer? _timer;
-  int _remainingTime = 0;
+  int _remainingTime = 30;
   bool _isButtonDisabled = false;
 
   @override
@@ -43,7 +43,7 @@ class _OTPScreenState extends State<OTPScreen> {
   void _startTimer() {
     setState(() {
       _isButtonDisabled = true;
-      _remainingTime = 0;
+      _remainingTime = 30;
     });
 
     _timer = Timer.periodic(Duration(seconds: 1), (timer) {

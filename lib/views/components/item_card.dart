@@ -23,11 +23,16 @@ class _ItemCardState extends State<ItemCard> {
       margin: EdgeInsets.symmetric(vertical: 11, horizontal: 15),
       padding: EdgeInsets.symmetric(vertical: 11, horizontal: 15),
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: 1,
-        ),
+        color: Colors.white,
         borderRadius: BorderRadius.circular(6),
+        boxShadow: [
+          const BoxShadow(
+            color: Colors.black26,
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: Offset(0, -1),
+          ),
+        ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,

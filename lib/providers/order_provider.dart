@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sss_retail/models/order_model.dart';
 
 class OrderProvider extends ChangeNotifier {
@@ -64,6 +65,8 @@ class OrderProvider extends ChangeNotifier {
         "LastOrderID": newOrderDoc.id,
       });
 
+      order.oid = newOrderDoc.id;
+
       userOrderHistory.add(order);
       currOrderList.clear();
 
@@ -73,13 +76,13 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  Future editOrderStatus(OrderModel order) async {
+  Future editOrderStatus(String oid, String status) async {
     try {
       CollectionReference orderCollection =
           FirebaseFirestore.instance.collection('Orders');
 
-      await orderCollection.doc(order.oid).update({
-        "Status": order.status,
+      await orderCollection.doc(oid).update({
+        "Status": status,
       });
 
       notifyListeners();
@@ -101,34 +104,49 @@ class OrderProvider extends ChangeNotifier {
 
       userOrderHistory.clear();
 
-      List<OrderModel> pendingOrders = [];
-      List<OrderModel> otherOrders = [];
-
       for (var element in orderData.docs) {
         final order = OrderModel(
           oid: element.id,
           uid: element['UID'] ?? '',
-          orderItems: element['Items'] ?? [],
-          orderDateTime: element['OrderDateTime'] ?? '',
+          orderItems: element['OrderItems'] ?? [],
+          orderDateTime: formatUnixDate(element['OrderDateTime'] ?? ''),
           status: element['Status'] ?? '',
           totalAmount: element['TotalAmount'] ?? 0,
         );
 
-        if (element['Status'] == 'Pending') {
-          pendingOrders.add(order);
-        } else {
-          otherOrders.add(order);
-        }
+        userOrderHistory.add(order);
       }
-
-      userOrderHistory
-        ..addAll(pendingOrders)
-        ..addAll(otherOrders);
 
       notifyListeners();
     } catch (e) {
       notifyListeners();
       rethrow;
     }
+  }
+
+  String getDaySuffix(int day) {
+    if (day >= 11 && day <= 13) {
+      return 'th';
+    }
+    switch (day % 10) {
+      case 1:
+        return 'st';
+      case 2:
+        return 'nd';
+      case 3:
+        return 'rd';
+      default:
+        return 'th';
+    }
+  }
+
+  String formatUnixDate(String dateU) {
+    final dateInMilliseconds = int.parse(dateU);
+    final date = DateTime.fromMillisecondsSinceEpoch(dateInMilliseconds);
+    final formattedDate = DateFormat('d MMM, y').format(date);
+    final daySuffix = getDaySuffix(date.day);
+    final finalFormattedDate =
+        '${date.day}$daySuffix ${formattedDate.substring(2)}';
+    return finalFormattedDate;
   }
 }

@@ -90,7 +90,7 @@ class _CartScreenState extends State<CartScreen> {
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Gap(120.w),
                       Image.asset(
@@ -104,6 +104,39 @@ class _CartScreenState extends State<CartScreen> {
                           fontWeight: FontWeight.w600,
                         ),
                       ),
+                      if (isOrderPlaced) ...[
+                        Gap(50),
+                        GestureDetector(
+                          onTap: () => Navigator.pop(context),
+                          child: Container(
+                            width: 120.w,
+                            padding: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 14),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8),
+                              boxShadow: const [
+                                BoxShadow(
+                                  color: Colors.black26,
+                                  spreadRadius: 2,
+                                  blurRadius: 5,
+                                  offset: Offset(0, -1),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                "Go Back",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: AppColors.accentColor2,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ]
                     ],
                   ),
                 )
@@ -112,6 +145,7 @@ class _CartScreenState extends State<CartScreen> {
                     children: [
                       Gap(18),
                       ListView.builder(
+                        physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
                         itemCount: orderProv.currOrderList.length,
                         itemBuilder: (context, index) {
