@@ -13,6 +13,7 @@ class ItemProvider extends ChangeNotifier {
         "Price": item.itemPrice,
         "Type": item.itemType,
         "ParentItemID": item.parentItemId,
+        "Order": item.itemOrder,
       });
 
       notifyListeners();
@@ -32,6 +33,7 @@ class ItemProvider extends ChangeNotifier {
         "Price": item.itemPrice,
         "Type": item.itemType,
         "ParentItemID": item.parentItemId,
+        "Order": item.itemOrder,
       });
 
       notifyListeners();

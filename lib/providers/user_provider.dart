@@ -168,9 +168,13 @@ class UserProvider extends ChangeNotifier {
             itemPrice: element['Price'] ?? 0,
             itemType: element['Type'] ?? '',
             parentItemId: element['ParentItemID'] ?? '',
+            itemOrder: element['Order'] ?? 0,
           ),
         );
       });
+
+      allItems.sort((a, b) => a.itemOrder.compareTo(b.itemOrder));
+
       notifyListeners();
     } catch (e) {
       notifyListeners();

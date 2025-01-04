@@ -4,6 +4,43 @@ import 'package:sss_retail/models/order_model.dart';
 
 class OrderProvider extends ChangeNotifier {
   List<OrderModel> userOrderHistory = [];
+  List<dynamic> currOrderList = [];
+
+  void addOrder(Map<dynamic, dynamic> order) async {
+    try {
+      currOrderList.add(order);
+      notifyListeners();
+    } catch (e) {
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  void removeOrder(Map<dynamic, dynamic> order) async {
+    try {
+      currOrderList.remove(order);
+      notifyListeners();
+    } catch (e) {
+      notifyListeners();
+      rethrow;
+    }
+  }
+
+  void modifyOrderQty(String id, int qty) async {
+    try {
+      int index =
+          currOrderList.indexWhere((element) => element['itemId'] == id);
+
+      if (index != -1) {
+        currOrderList[index]['quantity'] = qty;
+      }
+
+      notifyListeners();
+    } catch (e) {
+      notifyListeners();
+      rethrow;
+    }
+  }
 
   Future<void> placeOrder(OrderModel order) async {
     try {
@@ -26,6 +63,9 @@ class OrderProvider extends ChangeNotifier {
       await userCollection.doc(order.uid).update({
         "LastOrderID": newOrderDoc.id,
       });
+
+      userOrderHistory.add(order);
+      currOrderList.clear();
 
       notifyListeners();
     } catch (e) {
