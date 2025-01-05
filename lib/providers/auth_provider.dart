@@ -121,7 +121,7 @@ class Auth extends ChangeNotifier {
 
       final userSnapshot = await users.doc(currentUserId).get();
       if (userSnapshot.exists) {
-        prefs.setString("Users", userSnapshot['Name']);
+        prefs.setString("UserName", userSnapshot['Name']);
         prefs.setString("PhoneNo", userSnapshot['Contact']);
         prefs.setString("DealerShipName", userSnapshot['DealerShipName']);
         prefs.setBool("IsAdmin", false);
@@ -131,24 +131,22 @@ class Auth extends ChangeNotifier {
         return 0;
       }
 
-      if (_auth.currentUser != null) {
-        final adminQuery = await users
-            .where('Phone', isEqualTo: _auth.currentUser?.phoneNumber)
-            .limit(1)
-            .get();
+      final adminQuery = await users
+          .where('Contact', isEqualTo: _auth.currentUser?.phoneNumber)
+          .limit(1)
+          .get();
 
-        if (adminQuery.docs.isNotEmpty) {
-          final adminSnapshot = adminQuery.docs.first;
-          prefs.setString("UserName", adminSnapshot['Name']);
-          prefs.setString("PhoneNo", adminSnapshot['Contact']);
-          prefs.setString('UID', _auth.currentUser!.uid);
-          prefs.setString("DealerShipName", 'SWAMI SAMARTHA ENT');
-          prefs.setBool("IsAdmin", true);
-          _userName = adminSnapshot['Name'];
-          _phoneNo = adminSnapshot['Contact'];
-          _token = _auth.currentUser!.uid;
-          return 1;
-        }
+      if (adminQuery.docs.isNotEmpty) {
+        final adminSnapshot = adminQuery.docs.first;
+        prefs.setString("UserName", adminSnapshot['Name']);
+        prefs.setString("PhoneNo", adminSnapshot['Contact']);
+        prefs.setString('UID', _auth.currentUser!.uid);
+        prefs.setString("DealerShipName", 'SWAMI SAMARTHA ENT');
+        prefs.setBool("IsAdmin", true);
+        _userName = adminSnapshot['Name'];
+        _phoneNo = adminSnapshot['Contact'];
+        _token = _auth.currentUser!.uid;
+        return 1;
       }
 
       return -1;

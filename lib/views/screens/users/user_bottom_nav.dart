@@ -13,7 +13,7 @@ class UserNav extends StatefulWidget {
 }
 
 class _UserNavState extends State<UserNav> {
-  PersistentTabController _controller =
+  final PersistentTabController _controller =
       PersistentTabController(initialIndex: 1);
 
   @override

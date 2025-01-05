@@ -18,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading = true;
+  bool isAdmin = false;
 
   @override
   void initState() {
@@ -33,9 +34,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final authProv = Provider.of<Auth>(context, listen: false);
 
     authProv.getProfile();
-    userProv.getUser(authProv.token);
-    setState(() {
-      isLoading = false;
+    userProv.getUser(authProv.token, authProv.isAdmin, authProv.phoneNo);
+    Future.delayed(Duration(milliseconds: 1500), () {
+      setState(() {
+        isAdmin = authProv.isAdmin;
+        isLoading = false;
+      });
     });
   }
 
@@ -169,7 +173,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final userProv = Provider.of<UserProvider>(context);
 
     final name = userProv.currUser.name;
-    final isAdmin = userProv.currUser.isAdmin;
     final phoneNo = userProv.currUser.phone;
     final dealerShipName = userProv.currUser.dealerShipName;
 
@@ -195,12 +198,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onTap: () => _handleAction('Edit Profile'),
                       iconBgColor: Colors.blue,
                     ),
-                    _buildActionTile(
-                      icon: Icons.contact_page,
-                      label: 'Contact Us',
-                      onTap: () => _handleAction('Contact Us'),
-                      iconBgColor: Colors.green,
-                    ),
+                    isAdmin
+                        ? SizedBox()
+                        : _buildActionTile(
+                            icon: Icons.contact_page,
+                            label: 'Contact Us',
+                            onTap: () => _handleAction('Contact Us'),
+                            iconBgColor: Colors.green,
+                          ),
                     _buildActionTile(
                       icon: Icons.logout_outlined,
                       label: 'Logout',

@@ -5,25 +5,23 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/order_model.dart';
-import 'package:sss_retail/providers/auth_provider.dart';
 import 'package:sss_retail/providers/order_provider.dart';
 import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
 import 'package:sss_retail/views/components/order_history_card.dart';
 
-class OrderHistoryScreen extends StatefulWidget {
-  const OrderHistoryScreen({super.key});
+class PastOrdersAdmin extends StatefulWidget {
+  const PastOrdersAdmin({super.key});
 
   @override
-  State<OrderHistoryScreen> createState() => _OrderHistoryScreenState();
+  State<PastOrdersAdmin> createState() => _PastOrdersAdminState();
 }
 
-class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
+class _PastOrdersAdminState extends State<PastOrdersAdmin> {
   bool isLoading = true;
   int? selectedIndex;
   String searchQuery = '';
-  String _orderType = 'Pending';
   final TextEditingController _searchController = TextEditingController();
 
   @override
@@ -39,11 +37,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
   }
 
   Future<void> getAllOrders() async {
-    final orderProv = Provider.of<OrderProvider>(context, listen: false);
-    final authProv = Provider.of<Auth>(context, listen: false);
     final itemProv = Provider.of<UserProvider>(context, listen: false);
     itemProv.getAllItems();
-    await orderProv.getOrderHistory(authProv.token);
+    await itemProv.getAllOrders();
+    itemProv.getAllUsers();
     Future.delayed(Duration(milliseconds: 1500), () {
       setState(() {
         isLoading = false;
@@ -231,13 +228,10 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final orderProv = Provider.of<OrderProvider>(context);
+    final orderProv = Provider.of<UserProvider>(context);
 
-    List<OrderModel> filterOrders = _filterItems(orderProv.userOrderHistory
-        .where((e) => _orderType == "Completed"
-            ? e.status != 'Pending'
-            : e.status == _orderType)
-        .toList());
+    List<OrderModel> filterOrders = _filterItems(
+        orderProv.allOrders.where((e) => e.status != 'Pending').toList());
 
     return Scaffold(
       appBar: CustomAppBar(title: "Order History"),
@@ -292,60 +286,6 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                         },
                       ),
                     ),
-                    Row(
-                      children: [
-                        Expanded(
-                          child: ListTile(
-                            title: const Text(
-                              'Pending',
-                              style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            leading: Transform.scale(
-                              scale: 1.2,
-                              child: Radio<String>(
-                                activeColor: AppColors.primary,
-                                value: 'Pending',
-                                groupValue: _orderType,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    _orderType = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: ListTile(
-                            title: const Text(
-                              'Past',
-                              style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.black87,
-                              ),
-                            ),
-                            leading: Transform.scale(
-                              scale: 1.2,
-                              child: Radio<String>(
-                                activeColor: AppColors.primary,
-                                value: 'Completed',
-                                groupValue: _orderType,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    _orderType = value!;
-                                  });
-                                },
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
                     Gap(15),
                     Expanded(
                       child: filterOrders.isEmpty
@@ -372,7 +312,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                                   isSelected: selectedIndex != null &&
                                       index == selectedIndex,
                                   cancelOrder: showCancelOrderDialog,
-                                  isAdmin: false,
+                                  isAdmin: true,
                                 );
                               },
                             ),

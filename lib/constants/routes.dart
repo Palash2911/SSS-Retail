@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sss_retail/views/screens/admin/admin_bottom_nav.dart';
 import 'package:sss_retail/views/screens/auth/login.dart';
 import 'package:sss_retail/views/screens/auth/otp.dart';
 import 'package:sss_retail/views/screens/auth/register.dart';
@@ -14,5 +15,5 @@ var approutes = <String, WidgetBuilder>{
   '/register': (context) => const RegisterScreen(),
 
   '/user-bottom-nav': (context) => const UserNav(),
-  // '/admin-bottom-nav': (context) => const AdminNav(),
+  '/admin-bottom-nav': (context) => const AdminBottomNav(),
 };

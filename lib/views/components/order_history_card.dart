@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/constants/utils.dart';
 import 'package:sss_retail/models/order_model.dart';
+import 'package:sss_retail/providers/user_provider.dart';
 
 class OrderHistoryCard extends StatefulWidget {
   final OrderModel order;
@@ -11,6 +13,7 @@ class OrderHistoryCard extends StatefulWidget {
   final int index;
   final bool isSelected;
   final void Function(String id) cancelOrder;
+  final bool isAdmin;
   const OrderHistoryCard({
     super.key,
     required this.order,
@@ -18,6 +21,7 @@ class OrderHistoryCard extends StatefulWidget {
     required this.index,
     required this.isSelected,
     required this.cancelOrder,
+    required this.isAdmin,
   });
 
   @override
@@ -64,6 +68,11 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
 
   @override
   Widget build(BuildContext context) {
+    final userProv = Provider.of<UserProvider>(context);
+
+    final name =
+        userProv.allUsers.firstWhere((e) => e.uid == widget.order.uid).name;
+
     return Container(
       margin: EdgeInsets.all(15),
       decoration: BoxDecoration(
@@ -90,6 +99,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (widget.isAdmin) _buildOrderItems("$name", "Name"),
                 _buildOrderItems("#${widget.order.orderNo}", "Order ID"),
                 _buildOrderItems(widget.order.status, "Status"),
                 _buildOrderItems(

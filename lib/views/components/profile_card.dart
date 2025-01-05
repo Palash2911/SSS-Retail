@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
+import 'package:sss_retail/constants/app_colors.dart';
 
 class ProfileCard extends StatelessWidget {
   final String uName;
@@ -63,17 +64,17 @@ class ProfileCard extends StatelessWidget {
                       const SizedBox(
                         height: 10,
                       ),
-                      AutoSizeText(
-                        uDealerName,
-                        style: TextStyle(
-                          fontSize: 18.sp,
-                          fontWeight: FontWeight.w500,
+                      if (!isAdmin) ...[
+                        AutoSizeText(
+                          uDealerName,
+                          style: TextStyle(
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 1,
                         ),
-                        maxLines: 1,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
+                        const SizedBox(height: 10),
+                      ],
                       AutoSizeText(
                         formatPhoneNumber(uNum),
                         style: TextStyle(
@@ -95,7 +96,7 @@ class ProfileCard extends StatelessWidget {
                                 borderRadius: const BorderRadius.all(
                                   Radius.circular(20),
                                 ),
-                                color: Colors.red,
+                                color: AppColors.primary,
                               ),
                               child: Text(
                                 'Admin',

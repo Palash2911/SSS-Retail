@@ -41,7 +41,8 @@ class _EditProfileState extends State<EditProfile> {
   void getDetails() {
     final profileProv = Provider.of<Auth>(context, listen: false);
     final registerProv = Provider.of<UserProvider>(context, listen: false);
-    registerProv.getUser(profileProv.token);
+    registerProv.getUser(
+        profileProv.token, profileProv.isAdmin, profileProv.phoneNo);
     if (profileProv.token.isNotEmpty) {
       _profileDetails[0].text = registerProv.currUser.name;
       name = registerProv.currUser.name;

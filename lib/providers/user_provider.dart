@@ -50,20 +50,40 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
-  void getUser(String uid) async {
+  void getUser(String uid, bool isAdmin, String phoneNo) async {
     try {
       if (uid.isEmpty) return;
-      DocumentSnapshot userSnapShot =
-          await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+      if (isAdmin) {
+        final adminShot = await FirebaseFirestore.instance
+            .collection('Users')
+            .where('Contact', isEqualTo: phoneNo)
+            .limit(1)
+            .get();
 
-      currUser = UserModel(
-        uid: uid,
-        name: userSnapShot['Name'],
-        phone: userSnapShot['Contact'],
-        dealerShipName: userSnapShot['DealerShipName'],
-        lastOrderId: userSnapShot['LastOrderID'],
-        isAdmin: userSnapShot['IsAdmin'],
-      );
+        if (adminShot.docs.isNotEmpty) {
+          final adminSnapshot = adminShot.docs.first;
+          currUser = UserModel(
+            uid: uid,
+            name: adminSnapshot['Name'],
+            phone: adminSnapshot['Contact'],
+            dealerShipName: adminSnapshot['DealerShipName'],
+            lastOrderId: adminSnapshot['LastOrderID'],
+            isAdmin: adminSnapshot['IsAdmin'],
+          );
+        }
+      } else {
+        DocumentSnapshot userSnapShot =
+            await FirebaseFirestore.instance.collection('Users').doc(uid).get();
+
+        currUser = UserModel(
+          uid: uid,
+          name: userSnapShot['Name'],
+          phone: userSnapShot['Contact'],
+          dealerShipName: userSnapShot['DealerShipName'],
+          lastOrderId: userSnapShot['LastOrderID'],
+          isAdmin: userSnapShot['IsAdmin'],
+        );
+      }
       notifyListeners();
     } catch (e) {
       notifyListeners();
