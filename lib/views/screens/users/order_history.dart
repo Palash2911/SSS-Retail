@@ -361,6 +361,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                               ),
                             )
                           : ListView.builder(
+                              padding: EdgeInsets.only(bottom: 21),
                               itemCount: filterOrders.length,
                               itemBuilder: (context, index) {
                                 return OrderHistoryCard(

@@ -116,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       required String label,
       required VoidCallback onTap,
       required Color iconBgColor}) {
-    return GestureDetector(
+    return InkWell(
       onTap: onTap,
       child: Container(
         width: double.infinity,

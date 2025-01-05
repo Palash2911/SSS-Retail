@@ -139,10 +139,12 @@ class UserProvider extends ChangeNotifier {
           OrderModel(
             oid: element.id,
             uid: element['UID'] ?? '',
-            orderItems: element['Items'] ?? [],
+            orderItems: element['OrderItems'] ?? [],
             orderDateTime: element['OrderDateTime'] ?? '',
             status: element['Status'] ?? '',
             totalAmount: element['TotalAmount'] ?? 0,
+            orderNo: element['OrderNo'] ?? 0,
+            deliveryDate: element['DeliveryDate'] ?? '',
           ),
         );
       });

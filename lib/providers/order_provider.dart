@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:sss_retail/models/order_model.dart';
 
 class OrderProvider extends ChangeNotifier {
@@ -59,6 +58,8 @@ class OrderProvider extends ChangeNotifier {
         "Status": order.status,
         "TotalAmount": order.totalAmount,
         "OrderItems": order.orderItems,
+        "OrderNo": order.orderNo,
+        "DeliveryDate": order.deliveryDate,
       });
 
       await userCollection.doc(order.uid).update({
@@ -109,9 +110,11 @@ class OrderProvider extends ChangeNotifier {
           oid: element.id,
           uid: element['UID'] ?? '',
           orderItems: element['OrderItems'] ?? [],
-          orderDateTime: formatUnixDate(element['OrderDateTime'] ?? ''),
+          orderDateTime: element['OrderDateTime'] ?? '',
           status: element['Status'] ?? '',
           totalAmount: element['TotalAmount'] ?? 0,
+          orderNo: element['OrderNo'] ?? 0,
+          deliveryDate: element['DeliveryDate'] ?? '',
         );
 
         userOrderHistory.add(order);
@@ -122,31 +125,5 @@ class OrderProvider extends ChangeNotifier {
       notifyListeners();
       rethrow;
     }
-  }
-
-  String getDaySuffix(int day) {
-    if (day >= 11 && day <= 13) {
-      return 'th';
-    }
-    switch (day % 10) {
-      case 1:
-        return 'st';
-      case 2:
-        return 'nd';
-      case 3:
-        return 'rd';
-      default:
-        return 'th';
-    }
-  }
-
-  String formatUnixDate(String dateU) {
-    final dateInMilliseconds = int.parse(dateU);
-    final date = DateTime.fromMillisecondsSinceEpoch(dateInMilliseconds);
-    final formattedDate = DateFormat('d MMM, y').format(date);
-    final daySuffix = getDaySuffix(date.day);
-    final finalFormattedDate =
-        '${date.day}$daySuffix ${formattedDate.substring(2)}';
-    return finalFormattedDate;
   }
 }

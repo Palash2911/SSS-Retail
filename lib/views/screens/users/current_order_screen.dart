@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
@@ -119,6 +120,33 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                       orderProv.currOrderList.any((order) =>
                                           order['itemId'] == item.itemId);
 
+                              final TextEditingController quantityController =
+                                  TextEditingController(
+                                text: isInCart
+                                    ? '${orderProv.currOrderList.firstWhere((order) => order['itemId'] == item.itemId)['quantity']}'
+                                    : '0',
+                              );
+
+                              quantityController.addListener(() {
+                                final newQty =
+                                    int.tryParse(quantityController.text) ?? 0;
+                                if (isInCart) {
+                                  if (newQty >= 0) {
+                                    orderProv.modifyOrderQty(
+                                        item.itemId, newQty);
+                                  }
+                                } else {
+                                  orderProv.addOrder(
+                                    {
+                                      'itemId': item.itemId,
+                                      'itemName': item.itemName,
+                                      'quantity': newQty,
+                                      'price': item.itemPrice,
+                                    },
+                                  );
+                                }
+                              });
+
                               return Container(
                                 margin: EdgeInsets.symmetric(vertical: 9),
                                 child: Row(
@@ -132,94 +160,106 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                         fontWeight: FontWeight.w500,
                                       ),
                                     ),
-                                    isInCart
-                                        ? Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(9),
-                                              border: Border.all(
-                                                  color: AppColors.primary),
-                                            ),
-                                            child: Row(
-                                              children: [
-                                                IconButton(
-                                                  icon: Icon(Icons.remove,
-                                                      color: AppColors.primary),
-                                                  onPressed: () {
-                                                    setState(() {
-                                                      final order = orderProv
-                                                          .currOrderList
-                                                          .firstWhere((order) =>
-                                                              order['itemId'] ==
-                                                              item.itemId);
-                                                      if (order['quantity'] >
-                                                          1) {
-                                                        orderProv
-                                                            .modifyOrderQty(
-                                                          item.itemId,
-                                                          order['quantity'] - 1,
-                                                        );
-                                                      } else {
-                                                        orderProv
-                                                            .removeOrder(order);
-                                                      }
-                                                    });
-                                                  },
-                                                ),
-                                                Text(
-                                                  '${orderProv.currOrderList.firstWhere((order) => order['itemId'] == item.itemId)['quantity']}',
-                                                  style: TextStyle(
-                                                    fontSize: 18,
-                                                    fontWeight: FontWeight.w600,
-                                                  ),
-                                                ),
-                                                IconButton(
-                                                  icon: Icon(Icons.add,
-                                                      color: AppColors.primary),
-                                                  onPressed: () {
-                                                    orderProv.modifyOrderQty(
-                                                      item.itemId,
-                                                      orderProv.currOrderList
-                                                                  .firstWhere((order) =>
-                                                                      order[
-                                                                          'itemId'] ==
-                                                                      item.itemId)[
-                                                              'quantity'] +
-                                                          1,
-                                                    );
-                                                    setState(() {});
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                        : ElevatedButton(
-                                            style: ElevatedButton.styleFrom(
-                                              backgroundColor:
-                                                  AppColors.primary,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(8),
-                                              ),
-                                            ),
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(9),
+                                        border: Border.all(
+                                            color: AppColors.primary),
+                                      ),
+                                      child: Row(
+                                        children: [
+                                          IconButton(
+                                            icon: Icon(Icons.remove,
+                                                color: AppColors.primary),
                                             onPressed: () {
-                                              orderProv.addOrder(
-                                                {
-                                                  'itemId': item.itemId,
-                                                  'itemName': item.itemName,
-                                                  'quantity': 1,
-                                                  'price': item.itemPrice,
-                                                },
-                                              );
-                                              setState(() {});
+                                              if (!isInCart) return;
+                                              setState(() {
+                                                final order = orderProv
+                                                    .currOrderList
+                                                    .firstWhere((order) =>
+                                                        order['itemId'] ==
+                                                        item.itemId);
+                                                if (order['quantity'] > 1) {
+                                                  orderProv.modifyOrderQty(
+                                                    item.itemId,
+                                                    order['quantity'] - 1,
+                                                  );
+                                                } else {
+                                                  orderProv.removeOrder(order);
+                                                }
+                                              });
                                             },
-                                            child: Text(
-                                              "Add to Cart",
-                                              style: TextStyle(
-                                                color: Colors.white,
+                                          ),
+                                          // Text(
+                                          //   !isInCart
+                                          //       ? '0'
+                                          //       : '${orderProv.currOrderList.firstWhere((order) => order['itemId'] == item.itemId)['quantity']}',
+                                          //   style: TextStyle(
+                                          //     fontSize: 18,
+                                          //     fontWeight: FontWeight.w600,
+                                          //   ),
+                                          // ),
+                                          SizedBox(
+                                            width: 36,
+                                            child: TextField(
+                                              controller: quantityController,
+                                              textAlign: TextAlign.center,
+                                              textInputAction: index ==
+                                                      filteredItems.length - 1
+                                                  ? TextInputAction.done
+                                                  : TextInputAction.next,
+                                              inputFormatters: [
+                                                FilteringTextInputFormatter
+                                                    .digitsOnly,
+                                              ],
+                                              keyboardType:
+                                                  TextInputType.number,
+                                              decoration: InputDecoration(
+                                                border: OutlineInputBorder(
+                                                  borderSide: BorderSide.none,
+                                                ),
+                                                contentPadding:
+                                                    EdgeInsets.symmetric(
+                                                        horizontal: 0),
                                               ),
+                                              onSubmitted: (value) {
+                                                if (index ==
+                                                    filteredItems.length - 1) {
+                                                  Navigator.of(context).pop();
+                                                }
+                                              },
                                             ),
                                           ),
+                                          IconButton(
+                                            icon: Icon(Icons.add,
+                                                color: AppColors.primary),
+                                            onPressed: () {
+                                              if (!isInCart) {
+                                                orderProv.addOrder(
+                                                  {
+                                                    'itemId': item.itemId,
+                                                    'itemName': item.itemName,
+                                                    'quantity': 1,
+                                                    'price': item.itemPrice,
+                                                  },
+                                                );
+                                              } else {
+                                                orderProv.modifyOrderQty(
+                                                    item.itemId,
+                                                    orderProv.currOrderList
+                                                                .firstWhere((order) =>
+                                                                    order[
+                                                                        'itemId'] ==
+                                                                    item.itemId)[
+                                                            'quantity'] +
+                                                        1);
+                                              }
+                                              setState(() {});
+                                            },
+                                          ),
+                                        ],
+                                      ),
+                                    ),
                                   ],
                                 ),
                               );

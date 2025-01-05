@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:sss_retail/constants/app_colors.dart';
+import 'package:sss_retail/constants/utils.dart';
 import 'package:sss_retail/models/order_model.dart';
 
 class OrderHistoryCard extends StatefulWidget {
@@ -89,9 +90,18 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildOrderItems(widget.order.oid, "Order ID"),
+                _buildOrderItems("#${widget.order.orderNo}", "Order ID"),
                 _buildOrderItems(widget.order.status, "Status"),
-                _buildOrderItems(widget.order.orderDateTime, "Order Date"),
+                _buildOrderItems(
+                    formatUnixDate(widget.order.orderDateTime), "Order Date"),
+                if (widget.order.status == "Pending") ...[
+                  _buildOrderItems(
+                      formatUnixTime(widget.order.orderDateTime), "Order Time"),
+                ],
+                if (widget.order.status != "Cancelled") ...[
+                  _buildOrderItems(formatUnixDate(widget.order.deliveryDate),
+                      "Delivery Date"),
+                ],
                 _buildOrderItems(
                     '₹ ${widget.order.totalAmount}', "Total Amount"),
                 if (widget.order.status == "Pending") ...[
@@ -113,7 +123,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
                         disabledBackgroundColor: AppColors.accent,
                       ),
                       child: Text(
-                        "Cancel Order",
+                        "Delete Order",
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

@@ -6,10 +6,12 @@ import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/order_model.dart';
 import 'package:sss_retail/providers/auth_provider.dart';
 import 'package:sss_retail/providers/order_provider.dart';
+import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/cart_card.dart';
 import 'package:sss_retail/views/components/cart_summary_card.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
+import 'package:sss_retail/views/components/date_picker.dart';
 
 class CartScreen extends StatefulWidget {
   const CartScreen({super.key});
@@ -21,6 +23,8 @@ class CartScreen extends StatefulWidget {
 class _CartScreenState extends State<CartScreen> {
   bool isOrderPlaced = false;
   bool isLoading = false;
+  int ono = 0;
+  // String _orderType = 'Today';
 
   void removeItem(int index) {
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
@@ -45,14 +49,33 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   void placeOrder() async {
+    if (selectedDate == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Please select delivery date !',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
     setState(() {
       isLoading = true;
     });
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
+    final userProv = Provider.of<UserProvider>(context, listen: false);
     final authProv = Provider.of<Auth>(context, listen: false);
     final orderItems = orderProv.currOrderList.map((item) {
       return {item['itemId']: item['quantity']};
     }).toList();
+
+    await userProv.getAllOrders();
+    ono = userProv.allOrders.length + 1;
 
     final totalPrice = orderProv.currOrderList.fold<int>(
       0,
@@ -67,8 +90,12 @@ class _CartScreenState extends State<CartScreen> {
         totalAmount: totalPrice,
         orderItems: orderItems,
         orderDateTime: '',
+        orderNo: ono,
+        deliveryDate: selectedDate!.millisecondsSinceEpoch.toString(),
       ),
     );
+
+    await orderProv.getOrderHistory(authProv.token);
 
     Future.delayed(Duration(seconds: 2), () {
       setState(() {
@@ -76,6 +103,25 @@ class _CartScreenState extends State<CartScreen> {
         isOrderPlaced = true;
       });
     });
+  }
+
+  DateTime? selectedDate;
+
+  void _selectDate() async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(
+        Duration(days: 365),
+      ),
+    );
+
+    if (pickedDate != null) {
+      setState(() {
+        selectedDate = pickedDate;
+      });
+    }
   }
 
   @override
@@ -105,7 +151,15 @@ class _CartScreenState extends State<CartScreen> {
                         ),
                       ),
                       if (isOrderPlaced) ...[
-                        Gap(50),
+                        Gap(21),
+                        Text(
+                          "Order ID: #$ono",
+                          style: TextStyle(
+                            fontSize: 21,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        Gap(40),
                         GestureDetector(
                           onTap: () => Navigator.pop(context),
                           child: Container(
@@ -144,6 +198,69 @@ class _CartScreenState extends State<CartScreen> {
                   child: Column(
                     children: [
                       Gap(18),
+                      // Row(
+                      //   children: [
+                      //     Expanded(
+                      //       child: ListTile(
+                      //         title: const Text(
+                      //           'Today',
+                      //           style: TextStyle(
+                      //             fontSize: 19,
+                      //             fontWeight: FontWeight.w500,
+                      //             color: Colors.black87,
+                      //           ),
+                      //         ),
+                      //         leading: Transform.scale(
+                      //           scale: 1.2,
+                      //           child: Radio<String>(
+                      //             activeColor: AppColors.primary,
+                      //             value: 'Today',
+                      //             groupValue: _orderType,
+                      //             onChanged: (String? value) {
+                      //               setState(() {
+                      //                 _orderType = value!;
+                      //               });
+                      //             },
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //     Expanded(
+                      //       child: ListTile(
+                      //         title: const Text(
+                      //           'Schedule',
+                      //           style: TextStyle(
+                      //             fontSize: 19,
+                      //             fontWeight: FontWeight.w500,
+                      //             color: Colors.black87,
+                      //           ),
+                      //         ),
+                      //         leading: Transform.scale(
+                      //           scale: 1.2,
+                      //           child: Radio<String>(
+                      //             activeColor: AppColors.primary,
+                      //             value: 'Schedule',
+                      //             groupValue: _orderType,
+                      //             onChanged: (String? value) {
+                      //               setState(() {
+                      //                 _orderType = value!;
+                      //               });
+                      //             },
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ],
+                      // ),
+                      // Gap(6),
+                      ScheduleOrderWidget(
+                        selectedDate: selectedDate,
+                        onDateSelected: _selectDate,
+                      ),
+                      Gap(7),
+                      // if (_orderType == 'Schedule') ...[
+                      // ],
+                      Gap(6),
                       ListView.builder(
                         physics: NeverScrollableScrollPhysics(),
                         shrinkWrap: true,
