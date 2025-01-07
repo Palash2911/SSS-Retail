@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
+import 'package:sss_retail/constants/utils.dart';
 import 'package:sss_retail/models/order_model.dart';
 import 'package:sss_retail/providers/order_provider.dart';
 import 'package:sss_retail/providers/user_provider.dart';
@@ -233,6 +234,17 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
     List<OrderModel> filterOrders = _filterItems(
         orderProv.allOrders.where((e) => e.status != 'Pending').toList());
 
+    Map<String, List<OrderModel>> ordersByDeliveryDate = {};
+    for (var order in filterOrders) {
+      final deliveryDate = order.deliveryDate;
+      ordersByDeliveryDate.putIfAbsent(deliveryDate, () => []).add(order);
+    }
+
+    final sortedOrdersByDeliveryDate = Map.fromEntries(
+      ordersByDeliveryDate.entries.toList()
+        ..sort((a, b) => b.key.compareTo(a.key)),
+    );
+
     return Scaffold(
       appBar: CustomAppBar(title: "Order History"),
       body: isLoading
@@ -302,17 +314,41 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
                             )
                           : ListView.builder(
                               padding: EdgeInsets.only(bottom: 21),
-                              itemCount: filterOrders.length,
+                              itemCount: sortedOrdersByDeliveryDate.keys.length,
                               itemBuilder: (context, index) {
-                                return OrderHistoryCard(
-                                  showOrderDetailsDialog:
-                                      showOrderDetailsDialog,
-                                  order: filterOrders[index],
-                                  index: index,
-                                  isSelected: selectedIndex != null &&
-                                      index == selectedIndex,
-                                  cancelOrder: showCancelOrderDialog,
-                                  isAdmin: true,
+                                final date = sortedOrdersByDeliveryDate.keys
+                                    .toList()[index];
+                                final orders =
+                                    sortedOrdersByDeliveryDate[date]!;
+
+                                return Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 8),
+                                      child: Text(
+                                        "Delivery Date: ${formatUnixDate(date)}",
+                                        style: TextStyle(
+                                          fontSize: 21,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+                                    ...orders.map(
+                                      (order) => OrderHistoryCard(
+                                        showOrderDetailsDialog:
+                                            showOrderDetailsDialog,
+                                        order: order,
+                                        index: index,
+                                        isSelected: selectedIndex != null &&
+                                            index == selectedIndex,
+                                        cancelOrder: showCancelOrderDialog,
+                                        isAdmin: false,
+                                      ),
+                                    )
+                                  ],
                                 );
                               },
                             ),

@@ -342,7 +342,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                         Expanded(
                           child: ListTile(
                             title: const Text(
-                              'Dry Food',
+                              'Dry',
                               style: TextStyle(
                                 fontSize: 19,
                                 fontWeight: FontWeight.w400,
@@ -367,7 +367,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                         Expanded(
                           child: ListTile(
                             title: const Text(
-                              'Wet Food',
+                              'Wet',
                               style: TextStyle(
                                 fontSize: 19,
                                 fontWeight: FontWeight.w400,

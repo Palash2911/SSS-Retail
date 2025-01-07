@@ -6,7 +6,6 @@ import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/order_model.dart';
 import 'package:sss_retail/providers/auth_provider.dart';
 import 'package:sss_retail/providers/order_provider.dart';
-import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/cart_card.dart';
 import 'package:sss_retail/views/components/cart_summary_card.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
@@ -59,6 +58,7 @@ class _CartScreenState extends State<CartScreen> {
               fontWeight: FontWeight.w600,
             ),
           ),
+          duration: Duration(milliseconds: 1200),
           backgroundColor: Colors.red,
         ),
       );
@@ -68,14 +68,13 @@ class _CartScreenState extends State<CartScreen> {
       isLoading = true;
     });
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
-    final userProv = Provider.of<UserProvider>(context, listen: false);
     final authProv = Provider.of<Auth>(context, listen: false);
     final orderItems = orderProv.currOrderList.map((item) {
       return {item['itemId']: item['quantity']};
     }).toList();
 
-    await userProv.getAllOrders();
-    ono = userProv.allOrders.length + 1;
+    ono = int.parse(
+        DateTime.now().millisecondsSinceEpoch.toString().substring(9, 13));
 
     final totalPrice = orderProv.currOrderList.fold<int>(
       0,
@@ -108,13 +107,17 @@ class _CartScreenState extends State<CartScreen> {
   DateTime? selectedDate;
 
   void _selectDate() async {
+    final now = DateTime.now();
+    final isAfter6PM = now.hour >= 18;
+
+    final initialDate =
+        isAfter6PM ? now.add(Duration(days: 2)) : now.add(Duration(days: 1));
+
     final pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(
-        Duration(days: 365),
-      ),
+      initialDate: initialDate,
+      firstDate: initialDate,
+      lastDate: now.add(Duration(days: 365)),
     );
 
     if (pickedDate != null) {

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/item_model.dart';
@@ -7,6 +6,7 @@ import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/admin_item_card.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
+import 'package:sss_retail/views/screens/admin/add_item.dart';
 
 class AllItemScreen extends StatefulWidget {
   const AllItemScreen({super.key});
@@ -20,6 +20,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
   int? selectedIndex;
   String searchQuery = '';
   final TextEditingController _searchController = TextEditingController();
+  String _foodType = 'Dry';
 
   @override
   void initState() {
@@ -56,7 +57,8 @@ class _AllItemScreenState extends State<AllItemScreen> {
   Widget build(BuildContext context) {
     final itemProv = Provider.of<UserProvider>(context);
 
-    List<ItemModel> filterItems = _filterItems(itemProv.allItems);
+    List<ItemModel> filterItems = _filterItems(
+        itemProv.allItems.where((e) => e.itemType == _foodType).toList());
 
     return Scaffold(
       appBar: CustomAppBar(title: "All Items"),
@@ -111,7 +113,60 @@ class _AllItemScreenState extends State<AllItemScreen> {
                         },
                       ),
                     ),
-                    Gap(15),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: ListTile(
+                            title: const Text(
+                              'Dry',
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            leading: Transform.scale(
+                              scale: 1.2,
+                              child: Radio<String>(
+                                activeColor: AppColors.primary,
+                                value: 'Dry',
+                                groupValue: _foodType,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    _foodType = value!;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListTile(
+                            title: const Text(
+                              'Wet',
+                              style: TextStyle(
+                                fontSize: 19,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            leading: Transform.scale(
+                              scale: 1.2,
+                              child: Radio<String>(
+                                activeColor: AppColors.primary,
+                                value: 'Wet',
+                                groupValue: _foodType,
+                                onChanged: (String? value) {
+                                  setState(() {
+                                    _foodType = value!;
+                                  });
+                                },
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                     Expanded(
                       child: filterItems.isEmpty
                           ? Center(
@@ -126,7 +181,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                               ),
                             )
                           : ListView.builder(
-                              padding: EdgeInsets.only(bottom: 21),
+                              padding: EdgeInsets.only(bottom: 81),
                               itemCount: filterItems.length,
                               itemBuilder: (context, index) {
                                 return AdminItemCard(
@@ -134,6 +189,15 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   index: index,
                                   isSelected: selectedIndex != null &&
                                       index == selectedIndex,
+                                  parentItemName: filterItems[index]
+                                          .parentItemId
+                                          .isNotEmpty
+                                      ? itemProv.allItems
+                                          .firstWhere((e) =>
+                                              e.itemId ==
+                                              filterItems[index].parentItemId)
+                                          .itemName
+                                      : '',
                                 );
                               },
                             ),
@@ -142,6 +206,32 @@ class _AllItemScreenState extends State<AllItemScreen> {
                 ),
               ),
             ),
+      floatingActionButton: GestureDetector(
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => AddItem(),
+            ),
+          );
+        },
+        child: Container(
+          width: 160,
+          height: 51,
+          decoration: BoxDecoration(
+            color: Colors.red,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          alignment: Alignment.center,
+          child: Text(
+            "Add Item",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 21,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

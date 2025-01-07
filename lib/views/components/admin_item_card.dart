@@ -5,11 +5,13 @@ class AdminItemCard extends StatefulWidget {
   final ItemModel item;
   final int index;
   final bool isSelected;
+  final parentItemName;
   const AdminItemCard({
     super.key,
     required this.item,
     required this.index,
     required this.isSelected,
+    required this.parentItemName,
   });
 
   @override
@@ -77,6 +79,9 @@ class _AdminItemCardState extends State<AdminItemCard> {
               children: [
                 _buildOrderItems(widget.item.itemName, 'Item'),
                 _buildOrderItems(widget.item.itemId, 'Item ID'),
+                if (widget.item.parentItemId.isNotEmpty) ...[
+                  _buildOrderItems(widget.parentItemName, 'Parent Item'),
+                ],
                 _buildOrderItems(widget.item.itemType, 'Item Type'),
                 _buildOrderItems("₹ ${widget.item.itemPrice}", 'Item Price'),
               ],
