@@ -8,6 +8,7 @@ import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/providers/auth_provider.dart';
+import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
 
 class OTPScreen extends StatefulWidget {
@@ -84,38 +85,57 @@ class _OTPScreenState extends State<OTPScreen> {
     setState(() {
       isLoading = true;
     });
-    var authProvider = Provider.of<Auth>(context, listen: false);
-    var isValid = false;
-    if (otp.length == 6) {
-      isValid = await authProvider.verifyOtp(otp).catchError((e) {
-        return false;
-      });
-      if (isValid) {
-        var user = await authProvider.checkUser();
-        if (mounted) {
-          if (user == 0) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/user-bottom-nav',
-              (Route<dynamic> route) => false,
-            );
-          } else if (user == 1) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/admin-bottom-nav',
-              (Route<dynamic> route) => false,
-            );
-          } else {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-              '/register',
-              (Route<dynamic> route) => false,
-            );
+    try {
+      var authProvider = Provider.of<Auth>(context, listen: false);
+      var killProv = Provider.of<UserProvider>(context, listen: false);
+      var isValid = false;
+      if (otp.length == 6) {
+        isValid = await authProvider.verifyOtp(otp).catchError((e) {
+          return false;
+        });
+        if (isValid) {
+          var user = await authProvider.checkUser();
+          if (mounted) {
+            if (user == 0) {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/user-bottom-nav',
+                (Route<dynamic> route) => false,
+              );
+            } else if (user == 1) {
+              await killProv.deleteOldOrders();
+              if (mounted) {
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  '/admin-bottom-nav',
+                  (Route<dynamic> route) => false,
+                );
+              }
+            } else {
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                '/register',
+                (Route<dynamic> route) => false,
+              );
+            }
           }
+        } else {
+          setState(() {
+            isLoading = false;
+          });
         }
       } else {
         setState(() {
           isLoading = false;
         });
+        Fluttertoast.showToast(
+          msg: "Something Went Wrong !",
+          toastLength: Toast.LENGTH_SHORT,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.grey,
+          textColor: Colors.white,
+          fontSize: 16,
+        );
       }
-    } else {
+    } catch (e) {
+      print(e);
       setState(() {
         isLoading = false;
       });

@@ -175,6 +175,28 @@ class UserProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> deleteOldOrders() async {
+    try {
+      CollectionReference orderCollection =
+          FirebaseFirestore.instance.collection('Orders');
+
+      final orderData = await orderCollection.get();
+      final currentDate = DateTime.now();
+
+      if ([1].contains(currentDate.day)) {
+        for (var doc in orderData.docs) {
+          final status = doc['Status']?.toString().toLowerCase() ?? '';
+          if (status == 'cancelled' || status == 'completed') {
+            await orderCollection.doc(doc.id).delete();
+          }
+        }
+      }
+    } catch (e) {
+      print('Error deleting old orders: $e');
+      rethrow;
+    }
+  }
+
   Future<void> getAllItems() async {
     try {
       CollectionReference itemsCollection =
