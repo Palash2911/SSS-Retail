@@ -11,9 +11,9 @@ class CartSummaryCard extends StatelessWidget {
     double calculatedHeight = (filteredItems.length * itemHeight);
     double modalHeight = calculatedHeight > 250 ? 250 : calculatedHeight;
 
-    final totalPrice = filteredItems.fold<int>(
-      0,
-      (sum, item) => sum + (item['price'] * item['quantity'] as int),
+    final totalPrice = filteredItems.fold<double>(
+      0.0,
+      (sum, item) => sum + (item['price'] * item['quantity']),
     );
 
     return Container(

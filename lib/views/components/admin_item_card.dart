@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:gap/gap.dart';
+import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/item_model.dart';
 
 class AdminItemCard extends StatefulWidget {
   final ItemModel item;
   final int index;
   final bool isSelected;
-  final parentItemName;
+  final String parentItemName;
+  final void Function(String) updateItem;
   const AdminItemCard({
     super.key,
     required this.item,
     required this.index,
     required this.isSelected,
     required this.parentItemName,
+    required this.updateItem,
   });
 
   @override
@@ -23,25 +28,34 @@ class _AdminItemCardState extends State<AdminItemCard> {
     return Padding(
       padding: const EdgeInsets.all(5),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            '$prefix: ',
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
+          SizedBox(
+            width: 96.w,
+            child: Text(
+              '$prefix: ',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+              softWrap: true,
             ),
           ),
-          Text(
-            suffix,
-            style: TextStyle(
-              fontSize: suffix == "Dry" || suffix == "Wet" ? 21 : 18,
-              fontWeight: FontWeight.bold,
-              color: suffix == "Dry"
-                  ? Colors.green
-                  : suffix == "Wet"
-                      ? Colors.orange
-                      : Colors.black,
+          Flexible(
+            child: Text(
+              suffix,
+              style: TextStyle(
+                fontSize: suffix == "Dry" || suffix == "Wet" ? 21 : 18,
+                fontWeight: FontWeight.bold,
+                color: suffix == "Dry"
+                    ? Colors.green
+                    : suffix == "Wet"
+                        ? Colors.orange
+                        : Colors.black,
+              ),
+              textAlign: TextAlign.end,
+              softWrap: true,
             ),
           ),
         ],
@@ -75,15 +89,37 @@ class _AdminItemCardState extends State<AdminItemCard> {
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _buildOrderItems(widget.item.itemName, 'Item'),
                 _buildOrderItems(widget.item.itemId, 'Item ID'),
+                _buildOrderItems(widget.item.itemName, 'Item Name'),
                 if (widget.item.parentItemId.isNotEmpty) ...[
                   _buildOrderItems(widget.parentItemName, 'Parent Item'),
                 ],
                 _buildOrderItems(widget.item.itemType, 'Item Type'),
                 _buildOrderItems("₹ ${widget.item.itemPrice}", 'Item Price'),
+                Gap(6),
+                ElevatedButton(
+                  onPressed: () {
+                    widget.updateItem(widget.item.itemId);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(150, 45),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(11),
+                    ),
+                    backgroundColor: const Color.fromARGB(209, 230, 57, 71),
+                    textStyle: const TextStyle(fontSize: 18),
+                    disabledBackgroundColor: AppColors.accent,
+                  ),
+                  child: Text(
+                    "Update Item",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                )
               ],
             ),
           ),

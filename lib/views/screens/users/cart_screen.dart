@@ -76,9 +76,9 @@ class _CartScreenState extends State<CartScreen> {
     ono = int.parse(
         DateTime.now().millisecondsSinceEpoch.toString().substring(9, 13));
 
-    final totalPrice = orderProv.currOrderList.fold<int>(
-      0,
-      (sum, item) => sum + (item['price'] * item['quantity'] as int),
+    final totalPrice = orderProv.currOrderList.fold<double>(
+      0.0,
+      (sum, item) => sum + (item['price'] * item['quantity']),
     );
 
     await orderProv.placeOrder(

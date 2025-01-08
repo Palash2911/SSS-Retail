@@ -1,7 +1,7 @@
 class ItemModel {
   final String itemId;
   final String itemName;
-  final int itemPrice;
+  final double itemPrice;
   final String itemType;
   final String parentItemId;
   final int itemOrder;

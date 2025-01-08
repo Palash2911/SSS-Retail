@@ -162,7 +162,7 @@ class UserProvider extends ChangeNotifier {
             orderItems: element['OrderItems'] ?? [],
             orderDateTime: element['OrderDateTime'] ?? '',
             status: element['Status'] ?? '',
-            totalAmount: element['TotalAmount'] ?? 0,
+            totalAmount: double.parse(element['TotalAmount'].toString()),
             orderNo: element['OrderNo'] ?? 0,
             deliveryDate: element['DeliveryDate'] ?? '',
           ),
@@ -187,7 +187,7 @@ class UserProvider extends ChangeNotifier {
           ItemModel(
             itemId: element.id,
             itemName: element['Name'] ?? '',
-            itemPrice: element['Price'] ?? 0,
+            itemPrice: double.parse(element['Price'].toString()),
             itemType: element['Type'] ?? '',
             parentItemId: element['ParentItemID'] ?? '',
             itemOrder: element['Order'] ?? 0,

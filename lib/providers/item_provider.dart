@@ -10,7 +10,7 @@ class ItemProvider extends ChangeNotifier {
 
       await itemCollection.doc().set({
         "Name": item.itemName,
-        "Price": item.itemPrice,
+        "Price": item.itemPrice.toString(),
         "Type": item.itemType,
         "ParentItemID": item.parentItemId,
         "Order": item.itemOrder,
@@ -30,7 +30,7 @@ class ItemProvider extends ChangeNotifier {
 
       await itemCollection.doc(item.itemId).update({
         "Name": item.itemName,
-        "Price": item.itemPrice,
+        "Price": item.itemPrice.toString(),
         "Type": item.itemType,
         "ParentItemID": item.parentItemId,
         "Order": item.itemOrder,

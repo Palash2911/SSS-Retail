@@ -56,7 +56,7 @@ class OrderProvider extends ChangeNotifier {
         "UID": order.uid,
         "OrderDateTime": DateTime.now().millisecondsSinceEpoch.toString(),
         "Status": order.status,
-        "TotalAmount": order.totalAmount,
+        "TotalAmount": order.totalAmount.toString(),
         "OrderItems": order.orderItems,
         "OrderNo": order.orderNo,
         "DeliveryDate": order.deliveryDate,
@@ -112,7 +112,7 @@ class OrderProvider extends ChangeNotifier {
           orderItems: element['OrderItems'] ?? [],
           orderDateTime: element['OrderDateTime'] ?? '',
           status: element['Status'] ?? '',
-          totalAmount: element['TotalAmount'] ?? 0,
+          totalAmount: double.parse(element['TotalAmount'].toString()),
           orderNo: element['OrderNo'] ?? 0,
           deliveryDate: element['DeliveryDate'] ?? '',
         );

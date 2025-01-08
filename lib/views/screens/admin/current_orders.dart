@@ -233,7 +233,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
     for (var item in dryitems) {
       List<CellValue> row = [TextCellValue(item.itemName)];
       int totalQty = 0;
-      int totalPrice = 0;
+      double totalPrice = 0;
 
       for (var order in orders) {
         int itemQty = 0;
@@ -251,7 +251,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
       }
 
       row.add(IntCellValue(totalQty));
-      row.add(IntCellValue(totalPrice));
+      row.add(DoubleCellValue(totalPrice));
       sheetObject.appendRow(row);
     }
 
@@ -272,7 +272,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
     for (var item in wetitems) {
       List<CellValue> row = [TextCellValue(item.itemName)];
       int totalQty = 0;
-      int totalPrice = 0;
+      double totalPrice = 0;
 
       for (var order in orders) {
         int itemQty = 0;
@@ -290,7 +290,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
       }
 
       row.add(IntCellValue(totalQty));
-      row.add(IntCellValue(totalPrice));
+      row.add(DoubleCellValue(totalPrice));
       sheetObject2.appendRow(row);
     }
 
@@ -330,7 +330,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
           ),
           actions: [
             TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
+              onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 "Cancel",
                 style: TextStyle(
@@ -344,6 +344,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                 setState(() {
                   isLoading = true;
                 });
+                Navigator.of(context).pop();
                 final orderProv =
                     Provider.of<OrderProvider>(context, listen: false);
 

@@ -29,6 +29,8 @@ class OrderHistoryCard extends StatefulWidget {
 }
 
 class _OrderHistoryCardState extends State<OrderHistoryCard> {
+  var name = '';
+
   Widget _buildOrderItems(String suffix, String prefix) {
     return InkWell(
       onTap: () {
@@ -70,8 +72,10 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
   Widget build(BuildContext context) {
     final userProv = Provider.of<UserProvider>(context);
 
-    final name =
-        userProv.allUsers.firstWhere((e) => e.uid == widget.order.uid).name;
+    if (widget.isAdmin) {
+      name =
+          userProv.allUsers.firstWhere((e) => e.uid == widget.order.uid).name;
+    }
 
     return Container(
       margin: EdgeInsets.all(15),

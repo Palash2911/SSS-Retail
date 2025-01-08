@@ -10,7 +10,9 @@ import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
 
 class AddItem extends StatefulWidget {
-  const AddItem({super.key});
+  final String type;
+  final String id;
+  const AddItem({super.key, required this.type, required this.id});
 
   @override
   State<AddItem> createState() => _AddItemState();
@@ -30,9 +32,9 @@ class _AddItemState extends State<AddItem> {
   String itemName = "";
   int itemOrder = -1;
   String itemType = "Dry";
-  int itemPrice = 0;
+  double itemPrice = 0.0;
   String? parentItem;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -43,7 +45,22 @@ class _AddItemState extends State<AddItem> {
   void getDetails() async {
     final registerProv = Provider.of<UserProvider>(context, listen: false);
     await registerProv.getAllItems();
-    await Future.delayed(Duration(seconds: 1), () {
+    if (widget.type == 'Update' && widget.id.isNotEmpty) {
+      final item =
+          registerProv.allItems.firstWhere((e) => e.itemId == widget.id);
+
+      _itemDetails[0].text = item.itemName;
+      itemName = item.itemName;
+      _itemDetails[1].text = item.itemOrder.toString();
+      itemOrder = item.itemOrder;
+      _itemDetails[2].text = item.itemPrice.toString();
+      itemPrice = item.itemPrice;
+      itemType = item.itemType;
+      if (item.parentItemId.isNotEmpty) {
+        parentItem = item.parentItemId;
+      }
+    }
+    await Future.delayed(Duration(milliseconds: 1500), () {
       setState(() {
         isLoading = false;
       });
@@ -122,17 +139,33 @@ class _AddItemState extends State<AddItem> {
       if (itemOrder == -1 || parentItem != null) {
         itemOrder = userProv.allItems.length;
       }
-      await itemProv.addItem(
-        ItemModel(
-          itemId: '',
-          itemName: itemName,
-          itemPrice: itemPrice,
-          itemType: itemType,
-          parentItemId: parentItem ?? '',
-          itemOrder:
-              itemOrder == userProv.allItems.length ? itemOrder : itemOrder - 1,
-        ),
-      );
+      if (widget.id.isNotEmpty) {
+        await itemProv.updateItem(
+          ItemModel(
+            itemId: widget.id,
+            itemName: itemName,
+            itemPrice: itemPrice,
+            itemType: itemType,
+            parentItemId: parentItem ?? '',
+            itemOrder: itemOrder == userProv.allItems.length
+                ? itemOrder
+                : itemOrder - 1,
+          ),
+        );
+      } else {
+        await itemProv.addItem(
+          ItemModel(
+            itemId: '',
+            itemName: itemName,
+            itemPrice: itemPrice,
+            itemType: itemType,
+            parentItemId: parentItem ?? '',
+            itemOrder: itemOrder == userProv.allItems.length
+                ? itemOrder
+                : itemOrder - 1,
+          ),
+        );
+      }
 
       userProv.getAllItems();
 
@@ -259,6 +292,7 @@ class _AddItemState extends State<AddItem> {
                                 inputFormatters: [
                                   FilteringTextInputFormatter.digitsOnly,
                                 ],
+                                enabled: widget.id.isEmpty,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: 18,
@@ -312,9 +346,6 @@ class _AddItemState extends State<AddItem> {
                               TextField(
                                 controller: _itemDetails[2],
                                 keyboardType: TextInputType.number,
-                                inputFormatters: [
-                                  FilteringTextInputFormatter.digitsOnly,
-                                ],
                                 style: TextStyle(
                                   fontWeight: FontWeight.w600,
                                   fontSize: 18,
@@ -322,7 +353,7 @@ class _AddItemState extends State<AddItem> {
                                 onChanged: (value) {
                                   print(value);
                                   setState(() {
-                                    itemPrice = int.parse(value);
+                                    itemPrice = double.parse(value);
                                   });
                                 },
                                 decoration: InputDecoration(
@@ -513,17 +544,17 @@ class _AddItemState extends State<AddItem> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        backgroundColor: AppColors.accentColor2,
+                        backgroundColor: AppColors.primary,
                         padding: const EdgeInsets.symmetric(
                             horizontal: 20, vertical: 10),
                         textStyle: const TextStyle(
-                          fontSize: 18,
+                          fontSize: 21,
                         ),
                         disabledBackgroundColor:
                             const Color.fromARGB(255, 200, 200, 200),
                       ),
-                      child: const Text(
-                        'Add Item',
+                      child: Text(
+                        widget.type == 'Add' ? 'Add Item' : 'Update Item',
                         style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.w600,

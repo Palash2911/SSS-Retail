@@ -4,7 +4,7 @@ class OrderModel {
   final String status;
   final String orderDateTime;
   final List<dynamic> orderItems;
-  final int totalAmount;
+  final double totalAmount;
   final int orderNo;
   final String deliveryDate;
 

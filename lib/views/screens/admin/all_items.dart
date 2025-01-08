@@ -37,7 +37,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
   Future<void> getAllOrders() async {
     final itemProv = Provider.of<UserProvider>(context, listen: false);
     itemProv.getAllItems();
-    Future.delayed(Duration(milliseconds: 1500), () {
+    Future.delayed(Duration(milliseconds: 1800), () {
       setState(() {
         isLoading = false;
       });
@@ -51,6 +51,21 @@ class _AllItemScreenState extends State<AllItemScreen> {
             order.itemName.toLowerCase().contains(searchQuery.toLowerCase()) ||
             order.itemId.toLowerCase().contains(searchQuery.toLowerCase()))
         .toList();
+  }
+
+  void updateItem(String id) {
+    Navigator.of(context)
+        .push(
+      MaterialPageRoute(
+        builder: (context) => AddItem(type: "Update", id: id),
+      ),
+    )
+        .then((_) {
+      setState(() {
+        isLoading = true;
+      });
+      getAllOrders();
+    });
   }
 
   @override
@@ -198,6 +213,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                               filterItems[index].parentItemId)
                                           .itemName
                                       : '',
+                                  updateItem: updateItem,
                                 );
                               },
                             ),
@@ -210,7 +226,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
         onTap: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => AddItem(),
+              builder: (context) => AddItem(type: "Add", id: ''),
             ),
           );
         },
