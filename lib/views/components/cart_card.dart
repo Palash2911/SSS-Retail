@@ -40,6 +40,7 @@ class _CartCardState extends State<CartCard> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SizedBox(
+                width: 176.w,
                 child: Text(
                   "${widget.index + 1}. ${widget.item['itemName']}"
                       .toUpperCase(),
@@ -49,6 +50,7 @@ class _CartCardState extends State<CartCard> {
                   ),
                 ),
               ),
+              Gap(3),
               Container(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(6),

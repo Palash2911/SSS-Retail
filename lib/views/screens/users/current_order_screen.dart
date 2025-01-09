@@ -337,57 +337,122 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                         },
                       ),
                     ),
-                    Row(
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Expanded(
-                          child: ListTile(
-                            title: const Text(
-                              'Dry',
-                              style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black87,
-                              ),
+                        Gap(5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                Transform.scale(
+                                  scale: 1.0,
+                                  child: Radio<String>(
+                                    activeColor: AppColors.primary,
+                                    value: 'Dry',
+                                    groupValue: _foodType,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _foodType = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Text(
+                                  'Dry',
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ),
-                            leading: Transform.scale(
-                              scale: 1.2,
-                              child: Radio<String>(
-                                activeColor: AppColors.primary,
-                                value: 'Dry',
-                                groupValue: _foodType,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    _foodType = value!;
-                                  });
-                                },
-                              ),
+                            Gap(5),
+                            Row(
+                              children: [
+                                Transform.scale(
+                                  scale: 1.0,
+                                  child: Radio<String>(
+                                    activeColor: AppColors.primary,
+                                    value: 'Wet',
+                                    groupValue: _foodType,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _foodType = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Text(
+                                  'Wet',
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
                         ),
-                        Expanded(
-                          child: ListTile(
-                            title: const Text(
-                              'Wet',
-                              style: TextStyle(
-                                fontSize: 19,
-                                fontWeight: FontWeight.w400,
-                                color: Colors.black87,
-                              ),
+                        Gap(5),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Row(
+                              children: [
+                                Transform.scale(
+                                  scale: 1.0,
+                                  child: Radio<String>(
+                                    activeColor: AppColors.primary,
+                                    value: 'Horeca',
+                                    groupValue: _foodType,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _foodType = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Text(
+                                  'Horeca',
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ),
-                            leading: Transform.scale(
-                              scale: 1.2,
-                              child: Radio<String>(
-                                activeColor: AppColors.primary,
-                                value: 'Wet',
-                                groupValue: _foodType,
-                                onChanged: (String? value) {
-                                  setState(() {
-                                    _foodType = value!;
-                                  });
-                                },
-                              ),
+                            Gap(5),
+                            Row(
+                              children: [
+                                Transform.scale(
+                                  scale: 1.0,
+                                  child: Radio<String>(
+                                    activeColor: AppColors.primary,
+                                    value: 'Delite',
+                                    groupValue: _foodType,
+                                    onChanged: (String? value) {
+                                      setState(() {
+                                        _foodType = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                                const Text(
+                                  'Delite',
+                                  style: TextStyle(
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w400,
+                                    color: Colors.black87,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     ),

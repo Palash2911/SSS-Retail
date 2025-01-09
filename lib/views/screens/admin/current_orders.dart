@@ -1,22 +1,15 @@
-import 'dart:io';
-
-import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/constants/utils.dart';
-import 'package:sss_retail/models/item_model.dart';
 import 'package:sss_retail/models/order_model.dart';
-import 'package:sss_retail/models/user_model.dart';
 import 'package:sss_retail/providers/order_provider.dart';
 import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/admin_current_card.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
-import 'package:path_provider/path_provider.dart';
 
 class CurrentOrderAdmin extends StatefulWidget {
   const CurrentOrderAdmin({super.key});
@@ -55,14 +48,6 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
     });
   }
 
-  // List<OrderModel> _filterItems(List<OrderModel> orders) {
-  //   if (searchQuery.isEmpty) return orders;
-  //   return orders
-  //       .where((order) =>
-  //           order.oid.toLowerCase().contains(searchQuery.toLowerCase()))
-  //       .toList();
-  // }
-
   void showOrderDetailsDialog(int selectIndex, List<dynamic> orders) {
     setState(() {
       selectedIndex = selectIndex;
@@ -75,7 +60,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
       var matchingItem = itemProv.allItems
           .firstWhere((element) => element.itemId == item.keys.first);
 
-      int totalPrice = matchingItem.itemPrice * item.values.first as int;
+      double totalPrice = matchingItem.itemPrice * item.values.first;
 
       orderDetails.add({
         'item_name': matchingItem.itemName,
@@ -171,152 +156,6 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
         );
       },
     );
-  }
-
-  Future<void> generateSeparateExcelFiles(
-    List<OrderModel> orders,
-    List<ItemModel> allItems,
-    List<UserModel> users,
-    String dateTime,
-  ) async {
-    try {
-      List<ItemModel> dryItems =
-          allItems.where((item) => item.itemType == 'Dry').toList();
-      List<ItemModel> wetItems =
-          allItems.where((item) => item.itemType == 'Wet').toList();
-
-      await _generateExcelFile(orders, dryItems, wetItems,
-          'Dry_Items_Summary.xlsx', users, dateTime);
-    } catch (e) {
-      print('Failed to generate Excel files: $e');
-    }
-  }
-
-  Future<void> _generateExcelFile(
-    List<OrderModel> orders,
-    List<ItemModel> dryitems,
-    List<ItemModel> wetitems,
-    String fileName,
-    List<UserModel> users,
-    String dateTime,
-  ) async {
-    var excel = Excel.createExcel();
-    var excel2 = Excel.createExcel();
-    Sheet sheetObject = excel[excel.getDefaultSheet()!];
-    Sheet sheetObject2 = excel2[excel2.getDefaultSheet()!];
-
-    DateTime now = DateTime.fromMillisecondsSinceEpoch(int.parse(dateTime));
-    DateTime headerDate = now.hour < 19 ? now : now.add(Duration(days: 1));
-    String headerDateString =
-        '${headerDate.day}-${headerDate.month}-${headerDate.year}';
-
-    List<CellValue> headerRow = [
-      TextCellValue(headerDateString),
-    ];
-    List<CellValue> headerRow2 = [TextCellValue(headerDateString)];
-
-    for (var order in orders) {
-      final name = users.firstWhere((e) => e.uid == order.uid).name;
-      if (!headerRow.contains(TextCellValue(name))) {
-        headerRow.add(TextCellValue(name));
-      }
-    }
-    headerRow.add(TextCellValue('Total Qty'));
-    headerRow.add(TextCellValue('Total Price'));
-
-    sheetObject.appendRow(headerRow);
-
-    sheetObject
-        .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
-        .cellStyle = CellStyle(bold: true);
-
-    for (var item in dryitems) {
-      List<CellValue> row = [TextCellValue(item.itemName)];
-      int totalQty = 0;
-      double totalPrice = 0;
-
-      for (var order in orders) {
-        int itemQty = 0;
-
-        for (var orderItem in order.orderItems) {
-          if (orderItem.keys.first == item.itemId) {
-            itemQty = orderItem.values.first as int;
-            break;
-          }
-        }
-
-        totalQty += itemQty;
-        totalPrice += itemQty * item.itemPrice;
-        row.add(IntCellValue(itemQty));
-      }
-
-      row.add(IntCellValue(totalQty));
-      row.add(DoubleCellValue(totalPrice));
-      sheetObject.appendRow(row);
-    }
-
-    sheetObject2
-        .cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 0))
-        .cellStyle = CellStyle(bold: true);
-
-    for (var order in orders) {
-      final name = users.firstWhere((e) => e.uid == order.uid).name;
-      if (!headerRow2.contains(TextCellValue(name))) {
-        headerRow2.add(TextCellValue(name));
-      }
-    }
-    headerRow2.add(TextCellValue('Total Qty'));
-    headerRow2.add(TextCellValue('Total Price'));
-    sheetObject2.appendRow(headerRow2);
-
-    for (var item in wetitems) {
-      List<CellValue> row = [TextCellValue(item.itemName)];
-      int totalQty = 0;
-      double totalPrice = 0;
-
-      for (var order in orders) {
-        int itemQty = 0;
-
-        for (var orderItem in order.orderItems) {
-          if (orderItem.keys.first == item.itemId) {
-            itemQty = orderItem.values.first as int;
-            break;
-          }
-        }
-
-        totalQty += itemQty;
-        totalPrice += itemQty * item.itemPrice;
-        row.add(IntCellValue(itemQty));
-      }
-
-      row.add(IntCellValue(totalQty));
-      row.add(DoubleCellValue(totalPrice));
-      sheetObject2.appendRow(row);
-    }
-
-    Directory? directory = await getTemporaryDirectory();
-    String filePath =
-        '${directory.path}/Current_Dry_Orders_${now.toIso8601String()}.xlsx';
-    String filePath2 =
-        '${directory.path}/Current_Wet_Orders_${now.toIso8601String()}.xlsx';
-    File file = File(filePath);
-    File file2 = File(filePath2);
-    final excelSheet = excel.save()!;
-    final excelSheet2 = excel2.save()!;
-    file.writeAsBytesSync(excelSheet);
-    file2.writeAsBytesSync(excelSheet2);
-
-    final Email email = Email(
-      body: 'Please find the current orders attached as an Excel file.',
-      subject: 'Order Delivery Date ${formatUnixDate(dateTime)}',
-      recipients: ['sssenterprises2013@yahoo.in'],
-      attachmentPaths: [filePath, filePath2],
-      isHTML: false,
-    );
-
-    await FlutterEmailSender.send(email);
-
-    print('Excel file generated: $filePath');
   }
 
   void confirmAndCompleteOrders(List<OrderModel> allOrders) async {
@@ -417,7 +256,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                           ? Center(
                               child: Text(
                                 searchQuery.isEmpty
-                                    ? "No Orders Found !!"
+                                    ? "All Orders Completed !!"
                                     : "No Matching Order ID Found",
                                 style: TextStyle(
                                   fontSize: 21,

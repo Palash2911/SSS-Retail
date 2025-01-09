@@ -71,7 +71,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
       var matchingItem = itemProv.allItems
           .firstWhere((element) => element.itemId == item.keys.first);
 
-      int totalPrice = matchingItem.itemPrice * item.values.first as int;
+      double totalPrice = matchingItem.itemPrice * item.values.first;
 
       orderDetails.add({
         'item_name': matchingItem.itemName,

@@ -131,195 +131,159 @@ class _CartScreenState extends State<CartScreen> {
   Widget build(BuildContext context) {
     final orderProv = Provider.of<OrderProvider>(context);
 
-    return Scaffold(
-      appBar: CustomAppBar(title: "Cart Summary"),
-      body: isLoading
-          ? CustomLoader()
-          : orderProv.currOrderList.isEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Gap(120.w),
-                      Image.asset(
-                        'assets/cart_lottie.gif',
-                      ),
-                      Text(
-                        isOrderPlaced ? "Order Placed :)" : "Cart is empty !!",
-                        style: TextStyle(
-                          fontSize: 27,
-                          color: Colors.black,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      if (isOrderPlaced) ...[
-                        Gap(21),
-                        Text(
-                          "Order ID: #$ono",
-                          style: TextStyle(
-                            fontSize: 21,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Gap(40),
-                        GestureDetector(
-                          onTap: () => Navigator.pop(context),
-                          child: Container(
-                            width: 120.w,
-                            padding: EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 14),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(8),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Colors.black26,
-                                  spreadRadius: 2,
-                                  blurRadius: 5,
-                                  offset: Offset(0, -1),
-                                ),
-                              ],
-                            ),
-                            child: Center(
-                              child: Text(
-                                "Go Back",
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: AppColors.accentColor2,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ]
-                    ],
-                  ),
-                )
-              : SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      Gap(18),
-                      // Row(
-                      //   children: [
-                      //     Expanded(
-                      //       child: ListTile(
-                      //         title: const Text(
-                      //           'Today',
-                      //           style: TextStyle(
-                      //             fontSize: 19,
-                      //             fontWeight: FontWeight.w500,
-                      //             color: Colors.black87,
-                      //           ),
-                      //         ),
-                      //         leading: Transform.scale(
-                      //           scale: 1.2,
-                      //           child: Radio<String>(
-                      //             activeColor: AppColors.primary,
-                      //             value: 'Today',
-                      //             groupValue: _orderType,
-                      //             onChanged: (String? value) {
-                      //               setState(() {
-                      //                 _orderType = value!;
-                      //               });
-                      //             },
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //     Expanded(
-                      //       child: ListTile(
-                      //         title: const Text(
-                      //           'Schedule',
-                      //           style: TextStyle(
-                      //             fontSize: 19,
-                      //             fontWeight: FontWeight.w500,
-                      //             color: Colors.black87,
-                      //           ),
-                      //         ),
-                      //         leading: Transform.scale(
-                      //           scale: 1.2,
-                      //           child: Radio<String>(
-                      //             activeColor: AppColors.primary,
-                      //             value: 'Schedule',
-                      //             groupValue: _orderType,
-                      //             onChanged: (String? value) {
-                      //               setState(() {
-                      //                 _orderType = value!;
-                      //               });
-                      //             },
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ),
-                      //   ],
-                      // ),
-                      // Gap(6),
-                      ScheduleOrderWidget(
-                        selectedDate: selectedDate,
-                        onDateSelected: _selectDate,
-                      ),
-                      Gap(7),
-                      // if (_orderType == 'Schedule') ...[
-                      // ],
-                      Gap(6),
-                      ListView.builder(
-                        physics: NeverScrollableScrollPhysics(),
-                        shrinkWrap: true,
-                        itemCount: orderProv.currOrderList.length,
-                        itemBuilder: (context, index) {
-                          return CartCard(
-                            item: orderProv.currOrderList[index],
-                            index: index,
-                            removeItem: removeItem,
-                            modifyOrder: modifyOrder,
-                          );
-                        },
-                      ),
-                      Gap(30),
-                      CartSummaryCard(
-                        filteredItems: orderProv.currOrderList,
-                      ),
-                      Gap(45),
-                      Container(
-                        margin: EdgeInsets.symmetric(horizontal: 21),
-                        width: double.infinity,
-                        height: 49,
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColors.primary,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          onPressed: () {
-                            placeOrder();
-                          },
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.list_alt,
-                                color: Colors.white,
-                                size: 25,
-                              ),
-                              Gap(11),
-                              Text(
-                                "Place Order",
-                                style: TextStyle(
-                                  fontSize: 21,
-                                  color: Colors.white,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                      Gap(30),
-                    ],
+    Widget mainContent;
+    if (isLoading) {
+      mainContent = CustomLoader();
+    } else if (orderProv.currOrderList.isEmpty) {
+      mainContent = Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Gap(90.w),
+          Center(
+            child: Column(
+              children: [
+                Image.asset('assets/cart_lottie.gif'),
+                Text(
+                  isOrderPlaced ? "Order Placed :)" : "Cart is empty !!",
+                  style: TextStyle(
+                    fontSize: 27,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
+              ],
+            ),
+          ),
+          if (isOrderPlaced) ...[
+            Gap(21),
+            Text(
+              "Order ID: #$ono",
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Gap(40),
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: Container(
+                width: 120.w,
+                padding: EdgeInsets.symmetric(vertical: 5, horizontal: 14),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Colors.black26,
+                      spreadRadius: 2,
+                      blurRadius: 5,
+                      offset: Offset(0, -1),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: Text(
+                    "Go Back",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: AppColors.accentColor2,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ]
+        ],
+      );
+    } else {
+      mainContent = SingleChildScrollView(
+        child: Column(
+          children: [
+            Gap(18),
+            ScheduleOrderWidget(
+              selectedDate: selectedDate,
+              onDateSelected: _selectDate,
+            ),
+            Gap(7),
+            Gap(6),
+            ListView.builder(
+              physics: NeverScrollableScrollPhysics(),
+              shrinkWrap: true,
+              itemCount: orderProv.currOrderList.length,
+              itemBuilder: (context, index) {
+                return CartCard(
+                  item: orderProv.currOrderList[index],
+                  index: index,
+                  removeItem: removeItem,
+                  modifyOrder: modifyOrder,
+                );
+              },
+            ),
+            Gap(30),
+            CartSummaryCard(
+              filteredItems: orderProv.currOrderList,
+            ),
+            Gap(90),
+          ],
+        ),
+      );
+    }
+
+    return Scaffold(
+      appBar: CustomAppBar(title: "Cart Summary"),
+      body: Stack(
+        children: [
+          mainContent,
+          orderProv.currOrderList.isEmpty
+              ? SizedBox()
+              : Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    color: Colors.white,
+                    padding: EdgeInsets.fromLTRB(21, 12, 21, 18),
+                    child: SizedBox(
+                      width: double.infinity,
+                      height: 49,
+                      child: ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: orderProv.currOrderList.isEmpty
+                              ? Colors.grey
+                              : AppColors.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        onPressed: orderProv.currOrderList.isEmpty
+                            ? null
+                            : () => placeOrder(),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.list_alt,
+                              color: Colors.white,
+                              size: 25,
+                            ),
+                            Gap(11),
+                            Text(
+                              "Place Order",
+                              style: TextStyle(
+                                fontSize: 21,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+        ],
+      ),
     );
   }
 }

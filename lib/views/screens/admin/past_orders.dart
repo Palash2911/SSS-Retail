@@ -69,7 +69,7 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
       var matchingItem = itemProv.allItems
           .firstWhere((element) => element.itemId == item.keys.first);
 
-      int totalPrice = matchingItem.itemPrice * item.values.first as int;
+      double totalPrice = matchingItem.itemPrice * item.values.first;
 
       orderDetails.add({
         'item_name': matchingItem.itemName,
@@ -315,11 +315,17 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
                           : ListView.builder(
                               padding: EdgeInsets.only(bottom: 21),
                               itemCount: sortedOrdersByDeliveryDate.keys.length,
-                              itemBuilder: (context, index) {
+                              itemBuilder: (context, groupIndex) {
                                 final date = sortedOrdersByDeliveryDate.keys
-                                    .toList()[index];
+                                    .toList()[groupIndex];
                                 final orders =
                                     sortedOrdersByDeliveryDate[date]!;
+
+                                final startIndex = sortedOrdersByDeliveryDate
+                                    .values
+                                    .take(groupIndex)
+                                    .fold(
+                                        0, (sum, group) => sum + group.length);
 
                                 return Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,18 +342,61 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
                                         ),
                                       ),
                                     ),
-                                    ...orders.map(
-                                      (order) => OrderHistoryCard(
-                                        showOrderDetailsDialog:
-                                            showOrderDetailsDialog,
-                                        order: order,
-                                        index: index,
-                                        isSelected: selectedIndex != null &&
-                                            index == selectedIndex,
-                                        cancelOrder: showCancelOrderDialog,
-                                        isAdmin: false,
+                                    ...orders.asMap().entries.map(
+                                      (entry) {
+                                        final localIndex = entry.key;
+                                        final globalIndex =
+                                            startIndex + localIndex;
+                                        final order = entry.value;
+                                        return OrderHistoryCard(
+                                          showOrderDetailsDialog:
+                                              showOrderDetailsDialog,
+                                          order: order,
+                                          index: globalIndex,
+                                          isSelected: selectedIndex != null &&
+                                              globalIndex == selectedIndex,
+                                          cancelOrder: showCancelOrderDialog,
+                                          isAdmin: false,
+                                        );
+                                      },
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      margin: EdgeInsets.only(
+                                          left: 12,
+                                          right: 12,
+                                          top: 6,
+                                          bottom: 18),
+                                      child: ElevatedButton(
+                                        onPressed: () async {
+                                          await generateSeparateExcelFiles(
+                                            orders
+                                                .where((e) =>
+                                                    e.status != 'Cancelled')
+                                                .toList(),
+                                            orderProv.allItems,
+                                            orderProv.allUsers,
+                                            date,
+                                          );
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                          elevation: 2,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius:
+                                                BorderRadius.circular(9),
+                                          ),
+                                          backgroundColor: Colors.green,
+                                        ),
+                                        child: Text(
+                                          'Email Orders',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 21,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
                                       ),
-                                    )
+                                    ),
                                   ],
                                 );
                               },

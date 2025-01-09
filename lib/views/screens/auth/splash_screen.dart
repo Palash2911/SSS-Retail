@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:sss_retail/providers/auth_provider.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
 
+import '../../../providers/user_provider.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -19,6 +21,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future loadScreen(BuildContext ctx) async {
     var authProvider = Provider.of<Auth>(context, listen: false);
+    var killProv = Provider.of<UserProvider>(context, listen: false);
+
     await Future.delayed(const Duration(seconds: 3), () async {
       await authProvider.autoLogin().then((_) async {
         if (authProvider.isAuth) {
@@ -27,6 +31,7 @@ class _SplashScreenState extends State<SplashScreen> {
             if (userRole == 0) {
               Navigator.of(context).pushReplacementNamed('/user-bottom-nav');
             } else {
+              await killProv.deleteOldOrders();
               Navigator.of(context).pushReplacementNamed('/admin-bottom-nav');
             }
           } else {

@@ -179,16 +179,21 @@ class UserProvider extends ChangeNotifier {
     try {
       CollectionReference orderCollection =
           FirebaseFirestore.instance.collection('Orders');
-
-      final orderData = await orderCollection.get();
       final currentDate = DateTime.now();
+      final cutoffDate =
+          DateTime(currentDate.year, currentDate.month - 1, currentDate.day);
 
-      if ([1].contains(currentDate.day)) {
-        for (var doc in orderData.docs) {
-          final status = doc['Status']?.toString().toLowerCase() ?? '';
-          if (status == 'cancelled' || status == 'completed') {
-            await orderCollection.doc(doc.id).delete();
-          }
+      final cutoffTimestamp = cutoffDate.millisecondsSinceEpoch;
+
+      final querySnapshot = await orderCollection.get();
+
+      for (var doc in querySnapshot.docs) {
+        final deliveryDateString = doc['DeliveryDate'] ?? '';
+        final deliveryDateMillis = int.tryParse(deliveryDateString);
+
+        if (deliveryDateMillis != null &&
+            deliveryDateMillis < cutoffTimestamp) {
+          await doc.reference.delete();
         }
       }
     } catch (e) {

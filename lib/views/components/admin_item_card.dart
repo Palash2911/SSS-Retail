@@ -46,13 +46,20 @@ class _AdminItemCardState extends State<AdminItemCard> {
             child: Text(
               suffix,
               style: TextStyle(
-                fontSize: suffix == "Dry" || suffix == "Wet" ? 21 : 18,
+                fontSize:
+                    suffix == "Dry" || suffix == "Wet" || suffix == "Horeca"
+                        ? 21
+                        : 18,
                 fontWeight: FontWeight.bold,
                 color: suffix == "Dry"
                     ? Colors.green
                     : suffix == "Wet"
                         ? Colors.orange
-                        : Colors.black,
+                        : suffix == "Horeca"
+                            ? Colors.blue
+                            : suffix == "Delite"
+                                ? Colors.indigo
+                                : Colors.black,
               ),
               textAlign: TextAlign.end,
               softWrap: true,
