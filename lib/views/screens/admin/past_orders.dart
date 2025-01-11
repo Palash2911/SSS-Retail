@@ -50,11 +50,19 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
   }
 
   List<OrderModel> _filterItems(List<OrderModel> orders) {
+    final userProv = Provider.of<UserProvider>(context, listen: false);
+
     if (searchQuery.isEmpty) return orders;
-    return orders
-        .where((order) =>
-            order.oid.toLowerCase().contains(searchQuery.toLowerCase()))
-        .toList();
+
+    return orders.where((order) {
+      final matchesOrderNo = order.orderNo.toString().contains(searchQuery);
+
+      final user = userProv.allUsers.firstWhere((e) => e.uid == order.uid);
+      final matchesUserName =
+          user.name.toLowerCase().contains(searchQuery.toLowerCase());
+
+      return matchesOrderNo || matchesUserName;
+    }).toList();
   }
 
   void showOrderDetailsDialog(int selectIndex, List<dynamic> orders) {
@@ -274,7 +282,7 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
                           color: Colors.black,
                         ),
                         decoration: InputDecoration(
-                          hintText: 'Search Order ID',
+                          hintText: 'Search Order ID or User Name...',
                           prefixIcon: Icon(Icons.search),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10),
@@ -305,7 +313,7 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
                               child: Text(
                                 searchQuery.isEmpty
                                     ? "No Orders Found !!"
-                                    : "No Matching Order ID Found",
+                                    : "No Matching Order Found",
                                 style: TextStyle(
                                   fontSize: 21,
                                   fontWeight: FontWeight.w600,
@@ -356,7 +364,7 @@ class _PastOrdersAdminState extends State<PastOrdersAdmin> {
                                           isSelected: selectedIndex != null &&
                                               globalIndex == selectedIndex,
                                           cancelOrder: showCancelOrderDialog,
-                                          isAdmin: false,
+                                          isAdmin: true,
                                         );
                                       },
                                     ),

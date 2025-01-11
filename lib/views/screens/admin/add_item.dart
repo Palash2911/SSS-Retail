@@ -441,7 +441,7 @@ class _AddItemState extends State<AddItem> {
                                             scale: 1.0,
                                             child: Radio<String>(
                                               activeColor: AppColors.primary,
-                                              value: 'Wet',
+                                              value: 'Delite',
                                               groupValue: itemType,
                                               onChanged: (String? value) {
                                                 setState(() {
@@ -451,7 +451,7 @@ class _AddItemState extends State<AddItem> {
                                             ),
                                           ),
                                           const Text(
-                                            'Wet',
+                                            'Delite',
                                             style: TextStyle(
                                               fontSize: 19,
                                               fontWeight: FontWeight.w400,
@@ -473,7 +473,7 @@ class _AddItemState extends State<AddItem> {
                                             scale: 1.0,
                                             child: Radio<String>(
                                               activeColor: AppColors.primary,
-                                              value: 'Horeca',
+                                              value: 'Wet',
                                               groupValue: itemType,
                                               onChanged: (String? value) {
                                                 setState(() {
@@ -483,7 +483,7 @@ class _AddItemState extends State<AddItem> {
                                             ),
                                           ),
                                           const Text(
-                                            'Horeca',
+                                            'Wet',
                                             style: TextStyle(
                                               fontSize: 19,
                                               fontWeight: FontWeight.w400,
@@ -499,7 +499,7 @@ class _AddItemState extends State<AddItem> {
                                             scale: 1.0,
                                             child: Radio<String>(
                                               activeColor: AppColors.primary,
-                                              value: 'Delite',
+                                              value: 'Horeca',
                                               groupValue: itemType,
                                               onChanged: (String? value) {
                                                 setState(() {
@@ -509,7 +509,7 @@ class _AddItemState extends State<AddItem> {
                                             ),
                                           ),
                                           const Text(
-                                            'Delite',
+                                            'Horeca',
                                             style: TextStyle(
                                               fontSize: 19,
                                               fontWeight: FontWeight.w400,

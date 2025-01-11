@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:provider/provider.dart';
+import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/constants/utils.dart';
 import 'package:sss_retail/models/order_model.dart';
 import 'package:sss_retail/providers/user_provider.dart';
@@ -10,6 +12,8 @@ class AdminCurrentCard extends StatefulWidget {
   final int index;
   final bool isSelected;
   final bool isAdmin;
+  final void Function(String id) cancelOrder;
+
   const AdminCurrentCard({
     super.key,
     required this.order,
@@ -17,6 +21,7 @@ class AdminCurrentCard extends StatefulWidget {
     required this.index,
     required this.isSelected,
     required this.isAdmin,
+    required this.cancelOrder,
   });
 
   @override
@@ -105,6 +110,32 @@ class _AdminCurrentCardState extends State<AdminCurrentCard> {
                 ],
                 _buildOrderItems(
                     '₹ ${widget.order.totalAmount}', "Total Amount"),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      widget.cancelOrder(widget.order.oid);
+                    },
+                    style: ElevatedButton.styleFrom(
+                      fixedSize: const Size(150, 45),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10.r),
+                      ),
+                      backgroundColor: const Color.fromARGB(209, 230, 57, 71),
+                      padding: EdgeInsets.symmetric(
+                          horizontal: 20.w, vertical: 10.w),
+                      textStyle: const TextStyle(fontSize: 18),
+                      disabledBackgroundColor: AppColors.accent,
+                    ),
+                    child: Text(
+                      "Delete Order",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

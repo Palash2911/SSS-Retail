@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
@@ -46,6 +47,82 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
         isLoading = false;
       });
     });
+  }
+
+  List<OrderModel> _filterItems(List<OrderModel> orders) {
+    final userProv = Provider.of<UserProvider>(context, listen: false);
+
+    if (searchQuery.isEmpty) return orders;
+
+    return orders.where((order) {
+      final matchesOrderNo = order.orderNo.toString().contains(searchQuery);
+
+      final user = userProv.allUsers.firstWhere((e) => e.uid == order.uid);
+      final matchesUserName =
+          user.name.toLowerCase().contains(searchQuery.toLowerCase());
+
+      return matchesOrderNo || matchesUserName;
+    }).toList();
+  }
+
+  void showCancelOrderDialog(String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Are you sure you want to cancel order?',
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                setState(() {
+                  isLoading = true;
+                });
+                final orderProv =
+                    Provider.of<OrderProvider>(context, listen: false);
+                await orderProv.editOrderStatus(id, 'Cancelled');
+
+                Fluttertoast.showToast(
+                  msg: 'Order Cancelled Successfully :(',
+                  toastLength: Toast.LENGTH_SHORT,
+                  timeInSecForIosWeb: 2,
+                  backgroundColor: AppColors.primary,
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+
+                getAllOrders();
+              },
+              child: Text(
+                'Yes',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'No',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   void showOrderDetailsDialog(int selectIndex, List<dynamic> orders) {
@@ -216,8 +293,8 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
   Widget build(BuildContext context) {
     final orderProv = Provider.of<UserProvider>(context);
 
-    List<OrderModel> pendingOrders =
-        orderProv.allOrders.where((e) => e.status == 'Pending').toList();
+    List<OrderModel> pendingOrders = _filterItems(
+        orderProv.allOrders.where((e) => e.status == 'Pending').toList());
 
     Map<String, List<OrderModel>> ordersByDeliveryDate = {};
     for (var order in pendingOrders) {
@@ -250,6 +327,39 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: TextField(
+                        controller: _searchController,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        decoration: InputDecoration(
+                          hintText: 'Search Order ID or User Name...',
+                          prefixIcon: Icon(Icons.search),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(
+                              color: AppColors.primary,
+                              width: 1.5,
+                            ),
+                          ),
+                          contentPadding: EdgeInsets.symmetric(
+                            vertical: 10,
+                            horizontal: 16,
+                          ),
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            searchQuery = value;
+                          });
+                        },
+                      ),
+                    ),
                     Gap(15),
                     Expanded(
                       child: sortedOrdersByDeliveryDate.isEmpty
@@ -257,7 +367,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                               child: Text(
                                 searchQuery.isEmpty
                                     ? "All Orders Completed !!"
-                                    : "No Matching Order ID Found",
+                                    : "No Matching Order Found",
                                 style: TextStyle(
                                   fontSize: 21,
                                   fontWeight: FontWeight.w600,
@@ -328,6 +438,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                                             pendingOrders.indexOf(order) ==
                                                 selectedIndex,
                                         isAdmin: true,
+                                        cancelOrder: showCancelOrderDialog,
                                       ),
                                     ),
                                     Container(

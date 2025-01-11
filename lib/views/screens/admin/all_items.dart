@@ -131,7 +131,6 @@ class _AllItemScreenState extends State<AllItemScreen> {
                     ),
                     Column(
                       children: [
-                        Gap(5),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -167,7 +166,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   scale: 1.0,
                                   child: Radio<String>(
                                     activeColor: AppColors.primary,
-                                    value: 'Wet',
+                                    value: 'Delite',
                                     groupValue: _foodType,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -177,7 +176,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   ),
                                 ),
                                 const Text(
-                                  'Wet',
+                                  'Delite',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w400,
@@ -198,7 +197,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   scale: 1.0,
                                   child: Radio<String>(
                                     activeColor: AppColors.primary,
-                                    value: 'Horeca',
+                                    value: 'Wet',
                                     groupValue: _foodType,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -208,7 +207,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   ),
                                 ),
                                 const Text(
-                                  'Horeca',
+                                  'Wet',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w400,
@@ -224,7 +223,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   scale: 1.0,
                                   child: Radio<String>(
                                     activeColor: AppColors.primary,
-                                    value: 'Delite',
+                                    value: 'Horeca',
                                     groupValue: _foodType,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -234,7 +233,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                   ),
                                 ),
                                 const Text(
-                                  'Delite',
+                                  'Horeca',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w400,

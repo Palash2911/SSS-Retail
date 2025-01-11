@@ -103,7 +103,7 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (widget.isAdmin) _buildOrderItems("$name", "Name"),
+                if (widget.isAdmin) _buildOrderItems(name, "Name"),
                 _buildOrderItems("#${widget.order.orderNo}", "Order ID"),
                 _buildOrderItems(widget.order.status, "Status"),
                 _buildOrderItems(

@@ -340,7 +340,6 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                     Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        Gap(5),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
@@ -376,7 +375,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   scale: 1.0,
                                   child: Radio<String>(
                                     activeColor: AppColors.primary,
-                                    value: 'Wet',
+                                    value: 'Delite',
                                     groupValue: _foodType,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -386,7 +385,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   ),
                                 ),
                                 const Text(
-                                  'Wet',
+                                  'Delite',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w400,
@@ -407,7 +406,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   scale: 1.0,
                                   child: Radio<String>(
                                     activeColor: AppColors.primary,
-                                    value: 'Horeca',
+                                    value: 'Wet',
                                     groupValue: _foodType,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -417,7 +416,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   ),
                                 ),
                                 const Text(
-                                  'Horeca',
+                                  'Wet',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w400,
@@ -433,7 +432,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   scale: 1.0,
                                   child: Radio<String>(
                                     activeColor: AppColors.primary,
-                                    value: 'Delite',
+                                    value: 'Horeca',
                                     groupValue: _foodType,
                                     onChanged: (String? value) {
                                       setState(() {
@@ -443,7 +442,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   ),
                                 ),
                                 const Text(
-                                  'Delite',
+                                  'Horeca',
                                   style: TextStyle(
                                     fontSize: 19,
                                     fontWeight: FontWeight.w400,

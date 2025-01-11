@@ -100,8 +100,8 @@ Future<void> generateSeparateExcelFiles(
         }
       });
 
-    await _generateExcelFile(orders, dryItems, wetItems, horecaItems,
-        deliteItems, 'Dry_Items_Summary.xlsx', users, dateTime);
+    await _generateExcelFile(
+        orders, dryItems, wetItems, horecaItems, deliteItems, users, dateTime);
   } catch (e) {
     print('Failed to generate Excel files: $e');
   }
@@ -113,7 +113,6 @@ Future<void> _generateExcelFile(
   List<ItemModel> wetItems,
   List<ItemModel> horecaItems,
   List<ItemModel> deliteItems,
-  String fileName,
   List<UserModel> users,
   String dateTime,
 ) async {
