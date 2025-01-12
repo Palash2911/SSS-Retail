@@ -35,62 +35,68 @@ class _CartCardState extends State<CartCard> {
             ),
             borderRadius: BorderRadius.circular(6),
           ),
-          width: 280.w,
+          width: 295.w,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              SizedBox(
-                width: 176.w,
-                child: Text(
-                  "${widget.index + 1}. ${widget.item['itemName']}"
-                      .toUpperCase(),
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
+              Flexible(
+                flex: 2,
+                child: SizedBox(
+                  width: 176.w,
+                  child: Text(
+                    "${widget.index + 1}. ${widget.item['itemName']}"
+                        .toUpperCase(),
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ),
-              Gap(3),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(6),
-                  border: Border.all(color: AppColors.primary),
-                ),
-                padding: EdgeInsets.symmetric(horizontal: 9),
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      child: Icon(
-                        Icons.remove,
-                        color: AppColors.primary,
-                        size: 21,
+              Flexible(
+                flex: 1,
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(6),
+                    border: Border.all(color: AppColors.primary),
+                  ),
+                  padding: EdgeInsets.symmetric(horizontal: 9),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      GestureDetector(
+                        child: Icon(
+                          Icons.remove,
+                          color: AppColors.primary,
+                          size: 25,
+                        ),
+                        onTap: () {
+                          widget.modifyOrder(widget.item['itemId'],
+                              widget.item['quantity'] - 1);
+                        },
                       ),
-                      onTap: () {
-                        widget.modifyOrder(
-                            widget.item['itemId'], widget.item['quantity'] - 1);
-                      },
-                    ),
-                    Gap(5),
-                    Text(
-                      widget.item['quantity'].toString(),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.w600,
+                      Gap(2),
+                      Text(
+                        widget.item['quantity'].toString(),
+                        style: TextStyle(
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
-                    ),
-                    Gap(5),
-                    GestureDetector(
-                      child: Icon(
-                        Icons.add,
-                        color: AppColors.primary,
-                        size: 21,
+                      Gap(2),
+                      GestureDetector(
+                        child: Icon(
+                          Icons.add,
+                          color: AppColors.primary,
+                          size: 25,
+                        ),
+                        onTap: () {
+                          widget.modifyOrder(widget.item['itemId'],
+                              widget.item['quantity'] + 1);
+                        },
                       ),
-                      onTap: () {
-                        widget.modifyOrder(
-                            widget.item['itemId'], widget.item['quantity'] + 1);
-                      },
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ],

@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
+import 'package:sss_retail/constants/utils.dart';
 import 'package:sss_retail/models/order_model.dart';
 import 'package:sss_retail/providers/auth_provider.dart';
 import 'package:sss_retail/providers/order_provider.dart';
@@ -159,6 +160,22 @@ class _CartScreenState extends State<CartScreen> {
             Gap(21),
             Text(
               "Order ID: #$ono",
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Gap(6),
+            Text(
+              "Delivery Date: ${formatUnixDate(selectedDate!.millisecondsSinceEpoch.toString())}",
+              style: TextStyle(
+                fontSize: 21,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            Gap(6),
+            Text(
+              "Order Time: ${formatUnixTime(DateTime.now().millisecondsSinceEpoch.toString())}",
               style: TextStyle(
                 fontSize: 21,
                 fontWeight: FontWeight.w600,

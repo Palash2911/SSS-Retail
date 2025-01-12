@@ -10,7 +10,7 @@
     <uses-feature android:name="android.hardware.camera.ar" android:required="true" />
 
     <application
-        android:label="SSSRetail"
+        android:label="SSS DIST"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

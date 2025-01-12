@@ -10,6 +10,7 @@ class AdminItemCard extends StatefulWidget {
   final bool isSelected;
   final String parentItemName;
   final void Function(String) updateItem;
+  final void Function(String) deleteItem;
   const AdminItemCard({
     super.key,
     required this.item,
@@ -17,6 +18,7 @@ class AdminItemCard extends StatefulWidget {
     required this.isSelected,
     required this.parentItemName,
     required this.updateItem,
+    required this.deleteItem,
   });
 
   @override
@@ -106,27 +108,55 @@ class _AdminItemCardState extends State<AdminItemCard> {
                 _buildOrderItems(widget.item.itemType, 'Item Type'),
                 _buildOrderItems("₹ ${widget.item.itemPrice}", 'Item Price'),
                 Gap(6),
-                ElevatedButton(
-                  onPressed: () {
-                    widget.updateItem(widget.item.itemId);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    fixedSize: const Size(150, 45),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(11),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    OutlinedButton(
+                      onPressed: () {
+                        widget.deleteItem(widget.item.itemId);
+                      },
+                      style: OutlinedButton.styleFrom(
+                        fixedSize: const Size(150, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        side: BorderSide(
+                          color: AppColors.primary,
+                          width: 2,
+                        ),
+                        textStyle: const TextStyle(fontSize: 18),
+                        foregroundColor: AppColors.primary,
+                      ),
+                      child: Text(
+                        "Delete Item",
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
                     ),
-                    backgroundColor: const Color.fromARGB(209, 230, 57, 71),
-                    textStyle: const TextStyle(fontSize: 18),
-                    disabledBackgroundColor: AppColors.accent,
-                  ),
-                  child: Text(
-                    "Update Item",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w500,
+                    ElevatedButton(
+                      onPressed: () {
+                        widget.updateItem(widget.item.itemId);
+                      },
+                      style: ElevatedButton.styleFrom(
+                        fixedSize: const Size(150, 45),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(11),
+                        ),
+                        backgroundColor: AppColors.accentColor2,
+                        textStyle: const TextStyle(fontSize: 18),
+                        disabledBackgroundColor: AppColors.accent,
+                      ),
+                      child: Text(
+                        "Update Item",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
                     ),
-                  ),
-                )
+                  ],
+                ),
               ],
             ),
           ),

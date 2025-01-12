@@ -11,6 +11,7 @@ import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/admin_current_card.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
 import 'package:sss_retail/views/components/custom_loader.dart';
+import 'package:sss_retail/views/components/date_picker.dart';
 
 class CurrentOrderAdmin extends StatefulWidget {
   const CurrentOrderAdmin({super.key});
@@ -125,6 +126,103 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
     );
   }
 
+  DateTime? selectedDate;
+
+  Future<DateTime?> _selectDate() async {
+    final now = DateTime.now();
+    final isAfter6PM = now.hour >= 18;
+
+    final initialDate =
+        isAfter6PM ? now.add(Duration(days: 2)) : now.add(Duration(days: 1));
+
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate,
+      firstDate: initialDate,
+      lastDate: now.add(Duration(days: 365)),
+    );
+
+    if (pickedDate != null) {
+      return pickedDate;
+    }
+    return null;
+  }
+
+  void showDateOrderDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          content: StatefulBuilder(
+              builder: (BuildContext context, StateSetter setDialogState) {
+            return SizedBox(
+              height: 81.w,
+              child: ScheduleOrderWidget(
+                selectedDate: selectedDate,
+                onDateSelected: () async {
+                  selectedDate = await _selectDate();
+                  setDialogState(() {});
+                },
+              ),
+            );
+          }),
+          contentPadding: EdgeInsets.only(left: 0, top: 15),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () async {
+                if (selectedDate == null) {
+                  // print(
+                  //     '${formatUnixDate(selectedDate!.millisecondsSinceEpoch.toString())}');
+                  Fluttertoast.showToast(
+                    msg: 'Please Select A Date !',
+                    toastLength: Toast.LENGTH_SHORT,
+                    timeInSecForIosWeb: 2,
+                    backgroundColor: AppColors.primary,
+                    textColor: Colors.white,
+                    fontSize: 18.0,
+                  );
+                  return;
+                }
+                Navigator.pop(context);
+                setState(() {
+                  isLoading = true;
+                });
+                final orderProv =
+                    Provider.of<UserProvider>(context, listen: false);
+                List<OrderModel> dateOrders = orderProv.allOrders
+                    .where((e) =>
+                        e.deliveryDate ==
+                            selectedDate!.millisecondsSinceEpoch.toString() &&
+                        e.status == "Pending")
+                    .toList();
+
+                await generateSeparateExcelFiles(
+                  dateOrders,
+                  orderProv.allItems,
+                  orderProv.allUsers,
+                  selectedDate!.millisecondsSinceEpoch.toString(),
+                );
+                setState(() {
+                  isLoading = false;
+                });
+              },
+              child: Text(
+                'Email Order',
+                style: TextStyle(
+                  color: Colors.green,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void showOrderDetailsDialog(int selectIndex, List<dynamic> orders) {
     setState(() {
       selectedIndex = selectIndex;
@@ -223,7 +321,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
               child: Text(
                 'Close',
                 style: TextStyle(
-                  color: Colors.redAccent,
+                  color: Colors.blueAccent,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),
@@ -360,7 +458,35 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                         },
                       ),
                     ),
-                    Gap(15),
+                    Gap(6),
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.only(
+                          left: 12, right: 12, top: 6, bottom: 18),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            selectedDate = null;
+                          });
+                          showDateOrderDialog();
+                        },
+                        style: ElevatedButton.styleFrom(
+                          elevation: 2,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(9),
+                          ),
+                          backgroundColor: Colors.green,
+                        ),
+                        child: Text(
+                          'Email Order',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 21,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
                     Expanded(
                       child: sortedOrdersByDeliveryDate.isEmpty
                           ? Center(
@@ -439,40 +565,6 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                                                 selectedIndex,
                                         isAdmin: true,
                                         cancelOrder: showCancelOrderDialog,
-                                      ),
-                                    ),
-                                    Container(
-                                      width: double.infinity,
-                                      margin: EdgeInsets.only(
-                                          left: 12,
-                                          right: 12,
-                                          top: 6,
-                                          bottom: 18),
-                                      child: ElevatedButton(
-                                        onPressed: () async {
-                                          await generateSeparateExcelFiles(
-                                            orders,
-                                            orderProv.allItems,
-                                            orderProv.allUsers,
-                                            date,
-                                          );
-                                        },
-                                        style: ElevatedButton.styleFrom(
-                                          elevation: 2,
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(9),
-                                          ),
-                                          backgroundColor: Colors.green,
-                                        ),
-                                        child: Text(
-                                          'Email Orders',
-                                          style: TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 21,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
                                       ),
                                     ),
                                   ],

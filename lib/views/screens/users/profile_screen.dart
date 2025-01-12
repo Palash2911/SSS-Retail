@@ -110,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> callNumber() async {
-    await launchUrlString("tel://+919619142911").catchError((e) {
+    await launchUrlString("tel://+918308114114").catchError((e) {
       throw Exception('Phone number not found in data');
     });
   }

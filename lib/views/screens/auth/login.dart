@@ -94,14 +94,17 @@ class _LoginState extends State<Login> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      SizedBox(height: 40.h),
+                      SizedBox(height: 30.h),
                       Center(
-                        child: Image.asset(
-                          'assets/login_lottie.gif',
-                          scale: 0.65,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            'assets/Swami.jpeg',
+                            scale: 2.5,
+                          ),
                         ),
                       ),
-                      Gap(20.w),
+                      Gap(36.w),
                       Text(
                         "Phone Number",
                         style: TextStyle(
@@ -202,8 +205,7 @@ class _LoginState extends State<Login> {
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.r),
                             ),
-                            backgroundColor:
-                                const Color.fromARGB(209, 230, 57, 71),
+                            backgroundColor: AppColors.primary,
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20.w, vertical: 10.w),
                             textStyle: const TextStyle(fontSize: 18),

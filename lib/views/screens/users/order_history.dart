@@ -157,7 +157,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
               child: Text(
                 'Close',
                 style: TextStyle(
-                  color: Colors.redAccent,
+                  color: Colors.blueAccent,
                   fontSize: 18,
                   fontWeight: FontWeight.w500,
                 ),

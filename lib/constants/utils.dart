@@ -51,6 +51,7 @@ Future<void> generateSeparateExcelFiles(
     List<ItemModel> dryItems = allItems
         .where((item) => item.itemType == 'Dry' && item.itemPrice != 0.0)
         .toList()
+      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
       ..sort((a, b) {
         if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
           return -1;
@@ -64,6 +65,7 @@ Future<void> generateSeparateExcelFiles(
     List<ItemModel> wetItems = allItems
         .where((item) => item.itemType == 'Wet' && item.itemPrice != 0.0)
         .toList()
+      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
       ..sort((a, b) {
         if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
           return -1;
@@ -77,6 +79,7 @@ Future<void> generateSeparateExcelFiles(
     List<ItemModel> horecaItems = allItems
         .where((item) => item.itemType == 'Horeca' && item.itemPrice != 0.0)
         .toList()
+      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
       ..sort((a, b) {
         if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
           return -1;
@@ -90,6 +93,7 @@ Future<void> generateSeparateExcelFiles(
     List<ItemModel> deliteItems = allItems
         .where((item) => item.itemType == 'Delite' && item.itemPrice != 0.0)
         .toList()
+      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
       ..sort((a, b) {
         if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
           return -1;

@@ -42,4 +42,18 @@ class ItemProvider extends ChangeNotifier {
       rethrow;
     }
   }
+
+  Future<void> deleteItem(String itemId) async {
+    try {
+      CollectionReference itemCollection =
+          FirebaseFirestore.instance.collection('Items');
+
+      await itemCollection.doc(itemId).delete();
+
+      notifyListeners();
+    } catch (e) {
+      notifyListeners();
+      rethrow;
+    }
+  }
 }

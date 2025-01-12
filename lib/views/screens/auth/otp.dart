@@ -163,14 +163,17 @@ class _OTPScreenState extends State<OTPScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
-                      SizedBox(height: 40.h),
+                      SizedBox(height: 30.h),
                       Center(
-                        child: Image.asset(
-                          'assets/login_lottie.gif',
-                          scale: 0.65,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: Image.asset(
+                            'assets/Swami.jpeg',
+                            scale: 2.5,
+                          ),
                         ),
                       ),
-                      Gap(20.w),
+                      Gap(36.w),
                       Form(
                         key: _form,
                         child: TextField(

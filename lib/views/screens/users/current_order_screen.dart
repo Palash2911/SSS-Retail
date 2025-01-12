@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
@@ -24,6 +25,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
   String searchQuery = '';
   String _foodType = 'Dry';
   final TextEditingController _searchController = TextEditingController();
+  final FocusNode searchFocusNode = FocusNode();
 
   @override
   void initState() {
@@ -34,6 +36,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
   @override
   void dispose() {
     _searchController.dispose();
+    searchFocusNode.dispose();
     super.dispose();
   }
 
@@ -153,11 +156,14 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text(
-                                      item.itemName,
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.w500,
+                                    SizedBox(
+                                      width: 190.w,
+                                      child: Text(
+                                        item.itemName,
+                                        style: TextStyle(
+                                          fontSize: 18,
+                                          fontWeight: FontWeight.w500,
+                                        ),
                                       ),
                                     ),
                                     Container(
@@ -280,12 +286,15 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
     final itemProv = Provider.of<UserProvider>(context);
     final orderProv = Provider.of<OrderProvider>(context);
 
-    List<ItemModel> filteredItems = _filterItems(itemProv.allItems
-        .where((e) => e.itemType == _foodType && e.parentItemId.isEmpty)
-        .toList());
+    List<ItemModel> filteredItems = _filterItems(
+      itemProv.allItems
+          .where((e) => e.itemType == _foodType && e.parentItemId.isEmpty)
+          .toList()
+        ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder)),
+    );
 
     return Scaffold(
-      appBar: CustomAppBar(title: "SSS Retail"),
+      appBar: CustomAppBar(title: "SSS DIST"),
       body: isLoading
           ? CustomLoader()
           : RefreshIndicator(
@@ -297,9 +306,9 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
               },
               color: AppColors.accentColor2,
               backgroundColor: Colors.white,
-              child: GestureDetector(
+              child: InkWell(
                 onTap: () {
-                  FocusScope.of(context).unfocus();
+                  searchFocusNode.unfocus();
                 },
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,6 +317,7 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                       padding: const EdgeInsets.all(12.0),
                       child: TextField(
                         controller: _searchController,
+                        focusNode: searchFocusNode,
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.black,
@@ -475,7 +485,10 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
                                 return ItemCard(
                                   itemName: filteredItems[index].itemName,
                                   itemId: filteredItems[index].itemId,
-                                  showModel: showModal,
+                                  showModel: (String id) {
+                                    searchFocusNode.unfocus();
+                                    showModal(id);
+                                  },
                                 );
                               },
                             ),

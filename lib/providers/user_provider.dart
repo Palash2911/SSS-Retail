@@ -222,7 +222,7 @@ class UserProvider extends ChangeNotifier {
         );
       });
 
-      allItems.sort((a, b) => a.itemOrder.compareTo(b.itemOrder));
+      // allItems.sort((a, b) => a.itemOrder.compareTo(b.itemOrder));
 
       notifyListeners();
     } catch (e) {

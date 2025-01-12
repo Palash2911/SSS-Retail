@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:gap/gap.dart';
 import 'package:provider/provider.dart';
 import 'package:sss_retail/constants/app_colors.dart';
 import 'package:sss_retail/models/item_model.dart';
+import 'package:sss_retail/providers/item_provider.dart';
 import 'package:sss_retail/providers/user_provider.dart';
 import 'package:sss_retail/views/components/admin_item_card.dart';
 import 'package:sss_retail/views/components/custom_appbar.dart';
@@ -67,6 +69,66 @@ class _AllItemScreenState extends State<AllItemScreen> {
       });
       getAllOrders();
     });
+  }
+
+  void showDeleteItemDialog(String id) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(
+            'Are you sure you want to delete item?',
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.bold),
+          ),
+          actionsAlignment: MainAxisAlignment.center,
+          actions: [
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context);
+                setState(() {
+                  isLoading = true;
+                });
+                final itemProv =
+                    Provider.of<ItemProvider>(context, listen: false);
+                await itemProv.deleteItem(id);
+
+                Fluttertoast.showToast(
+                  msg: 'Item Deleted Successfully :(',
+                  toastLength: Toast.LENGTH_SHORT,
+                  timeInSecForIosWeb: 2,
+                  backgroundColor: AppColors.primary,
+                  textColor: Colors.white,
+                  fontSize: 16.0,
+                );
+
+                getAllOrders();
+              },
+              child: Text(
+                'Yes',
+                style: TextStyle(
+                  color: AppColors.primary,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: Text(
+                'No',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   @override
@@ -278,6 +340,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
                                           .itemName
                                       : '',
                                   updateItem: updateItem,
+                                  deleteItem: showDeleteItemDialog,
                                 );
                               },
                             ),
@@ -298,7 +361,7 @@ class _AllItemScreenState extends State<AllItemScreen> {
           width: 160,
           height: 51,
           decoration: BoxDecoration(
-            color: Colors.red,
+            color: Colors.blueAccent,
             borderRadius: BorderRadius.circular(12),
           ),
           alignment: Alignment.center,
