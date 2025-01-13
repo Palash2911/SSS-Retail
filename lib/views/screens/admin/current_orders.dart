@@ -459,34 +459,35 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
                       ),
                     ),
                     Gap(6),
-                    Container(
-                      width: double.infinity,
-                      margin: EdgeInsets.only(
-                          left: 12, right: 12, top: 6, bottom: 18),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            selectedDate = null;
-                          });
-                          showDateOrderDialog();
-                        },
-                        style: ElevatedButton.styleFrom(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(9),
+                    if (sortedOrdersByDeliveryDate.isNotEmpty)
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.only(
+                            left: 12, right: 12, top: 6, bottom: 18),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedDate = null;
+                            });
+                            showDateOrderDialog();
+                          },
+                          style: ElevatedButton.styleFrom(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(9),
+                            ),
+                            backgroundColor: Colors.green,
                           ),
-                          backgroundColor: Colors.green,
-                        ),
-                        child: Text(
-                          'Email Order',
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 21,
-                            fontWeight: FontWeight.w600,
+                          child: Text(
+                            'Email Order',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 21,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     Expanded(
                       child: sortedOrdersByDeliveryDate.isEmpty
                           ? Center(

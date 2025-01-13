@@ -209,7 +209,7 @@ class _LoginState extends State<Login> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 20.w, vertical: 10.w),
                             textStyle: const TextStyle(fontSize: 18),
-                            disabledBackgroundColor: AppColors.accent,
+                            disabledBackgroundColor: Colors.grey,
                           ),
                           child: const Text(
                             'Get OTP',

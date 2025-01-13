@@ -143,7 +143,7 @@ class _AdminItemCardState extends State<AdminItemCard> {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(11),
                         ),
-                        backgroundColor: AppColors.accentColor2,
+                        backgroundColor: AppColors.primary,
                         textStyle: const TextStyle(fontSize: 18),
                         disabledBackgroundColor: AppColors.accent,
                       ),

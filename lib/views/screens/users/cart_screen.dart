@@ -70,9 +70,10 @@ class _CartScreenState extends State<CartScreen> {
     });
     final orderProv = Provider.of<OrderProvider>(context, listen: false);
     final authProv = Provider.of<Auth>(context, listen: false);
-    final orderItems = orderProv.currOrderList.map((item) {
-      return {item['itemId']: item['quantity']};
-    }).toList();
+    final orderItems = orderProv.currOrderList
+        .where((item) => item['quantity'] > 0)
+        .map((item) => {item['itemId']: item['quantity']})
+        .toList();
 
     ono = int.parse(
         DateTime.now().millisecondsSinceEpoch.toString().substring(9, 13));
@@ -204,7 +205,7 @@ class _CartScreenState extends State<CartScreen> {
                     "Go Back",
                     style: TextStyle(
                       fontSize: 18,
-                      color: AppColors.accentColor2,
+                      color: AppColors.primary,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
@@ -253,7 +254,7 @@ class _CartScreenState extends State<CartScreen> {
       body: Stack(
         children: [
           mainContent,
-          orderProv.currOrderList.isEmpty
+          orderProv.currOrderList.isEmpty || isLoading
               ? SizedBox()
               : Positioned(
                   bottom: 0,

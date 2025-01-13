@@ -41,6 +41,38 @@ String formatUnixTime(String unixTimestamp) {
   return formattedTime;
 }
 
+List<ItemModel> sortItems(List<ItemModel> items) {
+  List<ItemModel> groupedItems = [];
+
+  Map<String, List<ItemModel>> childGroups = {};
+
+  for (var item in items) {
+    if (item.parentItemId.isNotEmpty) {
+      childGroups.putIfAbsent(item.parentItemId, () => []).add(item);
+    }
+  }
+
+  childGroups.forEach((parentId, children) {
+    children.sort((a, b) => a.itemOrder.compareTo(b.itemOrder));
+  });
+
+  for (var item in items) {
+    if (item.parentItemId.isEmpty) {
+      groupedItems.add(item);
+
+      if (childGroups.containsKey(item.itemId)) {
+        groupedItems.addAll(childGroups[item.itemId]!);
+        childGroups.remove(item.itemId);
+      }
+    }
+  }
+
+  for (var orphanChildren in childGroups.values) {
+    groupedItems.addAll(orphanChildren);
+  }
+  return groupedItems;
+}
+
 Future<void> generateSeparateExcelFiles(
   List<OrderModel> orders,
   List<ItemModel> allItems,
@@ -48,64 +80,49 @@ Future<void> generateSeparateExcelFiles(
   String dateTime,
 ) async {
   try {
-    List<ItemModel> dryItems = allItems
-        .where((item) => item.itemType == 'Dry' && item.itemPrice != 0.0)
-        .toList()
-      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
-      ..sort((a, b) {
-        if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
-          return -1;
-        } else if (a.parentItemId.isNotEmpty && b.parentItemId.isEmpty) {
-          return 1;
-        } else {
-          return a.parentItemId.compareTo(b.parentItemId);
-        }
-      });
+    List<ItemModel> dryItems = sortItems(
+      allItems.where((item) => item.itemType == 'Dry').toList()
+        ..sort(
+          (a, b) => a.itemOrder.compareTo(b.itemOrder),
+        ),
+    );
+    dryItems.removeWhere((e) => e.itemPrice == 0.0 && e.parentItemId.isEmpty);
 
-    List<ItemModel> wetItems = allItems
-        .where((item) => item.itemType == 'Wet' && item.itemPrice != 0.0)
-        .toList()
-      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
-      ..sort((a, b) {
-        if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
-          return -1;
-        } else if (a.parentItemId.isNotEmpty && b.parentItemId.isEmpty) {
-          return 1;
-        } else {
-          return a.parentItemId.compareTo(b.parentItemId);
-        }
-      });
+    List<ItemModel> wetItems = sortItems(
+      allItems.where((item) => item.itemType == 'Wet').toList()
+        ..sort(
+          (a, b) => a.itemOrder.compareTo(b.itemOrder),
+        ),
+    );
+    wetItems.removeWhere((e) => e.itemPrice == 0.0 && e.parentItemId.isEmpty);
 
-    List<ItemModel> horecaItems = allItems
-        .where((item) => item.itemType == 'Horeca' && item.itemPrice != 0.0)
-        .toList()
-      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
-      ..sort((a, b) {
-        if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
-          return -1;
-        } else if (a.parentItemId.isNotEmpty && b.parentItemId.isEmpty) {
-          return 1;
-        } else {
-          return a.parentItemId.compareTo(b.parentItemId);
-        }
-      });
+    List<ItemModel> horecaItems = sortItems(
+      allItems.where((item) => item.itemType == 'Horeca').toList()
+        ..sort(
+          (a, b) => a.itemOrder.compareTo(b.itemOrder),
+        ),
+    );
+    horecaItems
+        .removeWhere((e) => e.itemPrice == 0.0 && e.parentItemId.isEmpty);
 
-    List<ItemModel> deliteItems = allItems
-        .where((item) => item.itemType == 'Delite' && item.itemPrice != 0.0)
-        .toList()
-      ..sort((a, b) => a.itemOrder.compareTo(b.itemOrder))
-      ..sort((a, b) {
-        if (a.parentItemId.isEmpty && b.parentItemId.isNotEmpty) {
-          return -1;
-        } else if (a.parentItemId.isNotEmpty && b.parentItemId.isEmpty) {
-          return 1;
-        } else {
-          return a.parentItemId.compareTo(b.parentItemId);
-        }
-      });
+    List<ItemModel> deliteItems = sortItems(
+      allItems.where((item) => item.itemType == 'Delite').toList()
+        ..sort(
+          (a, b) => a.itemOrder.compareTo(b.itemOrder),
+        ),
+    );
+    deliteItems
+        .removeWhere((e) => e.itemPrice == 0.0 && e.parentItemId.isEmpty);
 
     await _generateExcelFile(
-        orders, dryItems, wetItems, horecaItems, deliteItems, users, dateTime);
+      orders,
+      dryItems,
+      wetItems,
+      horecaItems,
+      deliteItems,
+      users,
+      dateTime,
+    );
   } catch (e) {
     print('Failed to generate Excel files: $e');
   }
@@ -125,15 +142,64 @@ Future<void> _generateExcelFile(
   final headerDateString =
       '${headerDate.day}-${headerDate.month}-${headerDate.year}';
 
+  List<OrderModel> dryOrders = orders.where((order) {
+    return order.orderItems.any((item) {
+      final itemo = item as Map;
+      return dryItems.any((dryItem) => dryItem.itemId == itemo.keys.first);
+    });
+  }).toList();
+  List<OrderModel> wetOrders = orders.where((order) {
+    return order.orderItems.any((item) {
+      final itemo = item as Map;
+      return wetItems.any((wetIt) => wetIt.itemId == itemo.keys.first);
+    });
+  }).toList();
+  List<OrderModel> horecaOrders = orders.where((order) {
+    return order.orderItems.any((item) {
+      final itemo = item as Map;
+      return horecaItems.any((horecaIt) => horecaIt.itemId == itemo.keys.first);
+    });
+  }).toList();
+  List<OrderModel> deliteOrders = orders.where((order) {
+    return order.orderItems.any((item) {
+      final itemo = item as Map;
+      return deliteItems.any((deliteIt) => deliteIt.itemId == itemo.keys.first);
+    });
+  }).toList();
+
   final excelFiles = await Future.wait([
     _generateCategoryExcel(
-        'Dry', dryItems, orders, users, headerDateString, now),
+      'Dry',
+      dryItems,
+      dryOrders,
+      users,
+      headerDateString,
+      now,
+    ),
     _generateCategoryExcel(
-        'Wet', wetItems, orders, users, headerDateString, now),
+      'Wet',
+      wetItems,
+      wetOrders,
+      users,
+      headerDateString,
+      now,
+    ),
     _generateCategoryExcel(
-        'Horeca', horecaItems, orders, users, headerDateString, now),
+      'Horeca',
+      horecaItems,
+      horecaOrders,
+      users,
+      headerDateString,
+      now,
+    ),
     _generateCategoryExcel(
-        'Delite', deliteItems, orders, users, headerDateString, now),
+      'Delite',
+      deliteItems,
+      deliteOrders,
+      users,
+      headerDateString,
+      now,
+    ),
   ]);
 
   final email = Email(
@@ -165,7 +231,7 @@ Future<String> _generateCategoryExcel(
       .toList();
 
   for (var user in uniqueUsers) {
-    headerRow.add(TextCellValue(user.name));
+    headerRow.add(TextCellValue(user.dealerShipName));
   }
   headerRow.addAll([TextCellValue('Total Qty'), TextCellValue('Total Price')]);
 

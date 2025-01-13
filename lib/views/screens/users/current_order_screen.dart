@@ -64,7 +64,10 @@ class _CurrentOrderScreenState extends State<CurrentOrderScreen> {
 
     var filteredItems = itemProv.allItems
         .where((item) => item.parentItemId == parentId)
-        .toList();
+        .toList()
+      ..sort(
+        (a, b) => a.itemOrder.compareTo(b.itemOrder),
+      );
 
     if (filteredItems.isEmpty) {
       filteredItems =
