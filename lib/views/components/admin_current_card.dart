@@ -70,8 +70,9 @@ class _AdminCurrentCardState extends State<AdminCurrentCard> {
   Widget build(BuildContext context) {
     final userProv = Provider.of<UserProvider>(context);
 
-    final name =
-        userProv.allUsers.firstWhere((e) => e.uid == widget.order.uid).name;
+    final name = userProv.allUsers
+        .firstWhere((e) => e.uid == widget.order.uid)
+        .dealerShipName;
 
     return Container(
       margin: EdgeInsets.all(15),
