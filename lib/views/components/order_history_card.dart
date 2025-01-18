@@ -44,14 +44,14 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
             Text(
               '$prefix: ',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               suffix,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
                 color: suffix == "Pending"
                     ? Colors.orange
@@ -73,8 +73,9 @@ class _OrderHistoryCardState extends State<OrderHistoryCard> {
     final userProv = Provider.of<UserProvider>(context);
 
     if (widget.isAdmin) {
-      name =
-          userProv.allUsers.firstWhere((e) => e.uid == widget.order.uid).name;
+      name = userProv.allUsers
+          .firstWhere((e) => e.uid == widget.order.uid)
+          .dealerShipName;
     }
 
     return Container(

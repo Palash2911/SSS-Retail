@@ -42,14 +42,14 @@ class _AdminCurrentCardState extends State<AdminCurrentCard> {
             Text(
               '$prefix: ',
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               suffix,
               style: TextStyle(
-                fontSize: 18,
+                fontSize: 17,
                 fontWeight: FontWeight.bold,
                 color: suffix == "Pending"
                     ? Colors.orange

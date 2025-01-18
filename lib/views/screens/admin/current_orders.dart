@@ -60,7 +60,7 @@ class _CurrentOrderAdminState extends State<CurrentOrderAdmin> {
 
       final user = userProv.allUsers.firstWhere((e) => e.uid == order.uid);
       final matchesUserName =
-          user.name.toLowerCase().contains(searchQuery.toLowerCase());
+          user.dealerShipName.toLowerCase().contains(searchQuery.toLowerCase());
 
       return matchesOrderNo || matchesUserName;
     }).toList();
