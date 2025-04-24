@@ -110,10 +110,10 @@ class _CartScreenState extends State<CartScreen> {
 
   void _selectDate() async {
     final now = DateTime.now();
-    final isAfter6PM = now.hour >= 18;
+    final isAfter530PM = now.hour > 17 || (now.hour == 17 && now.minute >= 30);
 
     final initialDate =
-        isAfter6PM ? now.add(Duration(days: 2)) : now.add(Duration(days: 1));
+        isAfter530PM ? now.add(Duration(days: 2)) : now.add(Duration(days: 1));
 
     final pickedDate = await showDatePicker(
       context: context,
